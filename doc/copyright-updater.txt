@@ -1,0 +1,125 @@
+*copyright-updater.txt*               Automatic update of Copyright statements
+*copyright-updater.nvim*
+
+==============================================================================
+CONTENTS                                                   *copyright-updater*
+
+    Introduction ........................... |copyright-updater-intro|
+    Configuration .......................... |copyright-updater-configuration|
+    Commands ............................... |copyright-updater-commands|
+    Functions .............................. *copyright-updater-functions*
+
+==============================================================================
+INTRODUCTION                                         *copyright-updater-intro*
+
+copyright-updater adds an |autocommand| to update the year in copyright
+messages when saving a modified buffer. Inspired by vim Tip 1521.
+See <https://vim.fandom.com/wiki/Automatically_Update_Copyright_Notice_in_Files>
+
+==============================================================================
+CONFIGURATION                                *copyright-updater-configuration*
+
+For default configuration:
+>
+    require('copyright-updater').setup()
+<
+Full default configuration:
+>
+    require('copyright-updater').setup {
+        -- Whether the plugin should be active on startup
+        enabled = true,
+        -- Print status when enabling, disabling, or toggling the plugin
+        silent = false,
+        -- To disable a key mapping, either assign it an empty value or nil
+        mappings = {
+            toggle = '<leader>C',  -- Toggle the plugin on/off
+            enable = nil,  -- Enable the plugin globally
+            disable = nil, -- Disable the plugin globally
+            update = nil   -- Force update current buffer
+        },
+        -- Change filetypes list to a whitelist (as opposed to a blacklist)
+        whitelist = false,
+        -- List of file types to blacklist (or whitelist if whitelist=true)
+        filetypes = {}
+    }
+<
+
+Configuration options~
+
+                                                   *copyright-updater-enabled*
+enabled             Type: `boolean` (default: `true`)
+                    Defines whether the plugin should be active on startup.
+
+
+                                                    *copyright-updater-silent*
+silent              Type: `boolean` (default: `false`)
+                    Whether the plugin should report when it is enabled and
+                    disabled in the command line.
+
+
+                                           *copyright-updater-mappings.toggle*
+mappings.toggle     Type: `string` (default: `<leader>C`)
+                    Key mapping for toggling the plugin on/off.
+
+
+                                           *copyright-updater-mappings.enable*
+mappings.enable     Type: `string` (default: `nil`)
+                    Key mapping for enabling the plugin.
+
+
+                                          *copyright-updater-mappings.disable*
+mappings.disable    Type: `string` (default: `nil`)
+                    Key mapping for disabling the plugin.
+
+
+                                           *copyright-updater-mappings.update*
+mappings.update     Type: `string` (default: `nil`)
+                    Key mapping to force update the current buffer. Has the
+                    same effect as calling |:UpdateCopyright|.
+
+
+                                                 *copyright-updater-whitelist*
+whitelist           Type: `boolean` (default: `false`)
+                    Turn the filetypes list (|copyright-updater-filetypes|)
+                    into a white list. If set to the default value of `false`,
+                    the filetypes list is a blacklist.
+
+
+                                                 *copyright-updater-filetypes*
+filetypes           Type: `list` (default: `{}`)
+                    List of file types to blacklist so the plugin wont update
+                    copyright statements in files of those types. If
+                    |copyright-updater-whitelist| is set to `true`, the list
+                    becomes a white list.
+
+==============================================================================
+COMMANDS                                          *copyright-updater-commands*
+
+                                                            *:UpdateCopyright*
+Update copyright statements in the current buffer, ignoring the configured
+filetypes list.
+
+==============================================================================
+FUNCTIONS                                        *copyright-updater-functions*
+
+Four functions are exposed for integration with other scripts or plugins.
+
+
+update({force})                                   *copyright-updater.update()*
+    Update copyrights in the current buffer.
+
+    Parameters: ~
+        {force}     (`boolean`) Whether to ignore the configured file list.
+
+
+enable()                                          *copyright-updater.enable()*
+    Enables the plugin.
+
+disable()                                        *copyright-updater.disable()*
+    Disables the plugin.
+
+toggle()                                          *copyright-updater.toggle()*
+    Toggles the plugin on/off.
+
+
+vim:tw=78:ts=8:noet:ft=help:norl:
