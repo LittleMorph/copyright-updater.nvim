@@ -87,6 +87,9 @@ function M.update(force)
         end
     end
 
+    local report = vim.api.nvim_get_option('report')
+    if options.silent then vim.opt.report = 10000 end -- disable reporting
+
     if options.style.advanced then
         -- Append comma clauses first to prevent range update from spanning skipped years
         append_comma_clause()
@@ -98,6 +101,8 @@ function M.update(force)
         -- Update only simple lines
         update_range_clause()
     end
+
+    if options.silent then vim.opt.report = report end -- restore reporting
 end
 
 function M.enable()
