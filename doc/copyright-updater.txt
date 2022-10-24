@@ -30,6 +30,12 @@ Full default configuration:
         enabled = true,
         -- Print status when enabling, disabling, or toggling the plugin
         silent = false,
+        -- Advanced style allows multiple ranges separated by comma
+        -- Simple (non-advanced) style only use a single range
+        style = {
+            advanced = true,
+            force = false,   -- Allow reducing advanced style to simple style
+        },
         -- To disable a key mapping, either assign it an empty value or nil
         mappings = {
             toggle = '<leader>C',  -- Toggle the plugin on/off
@@ -55,6 +61,20 @@ enabled             Type: `boolean` (default: `true`)
 silent              Type: `boolean` (default: `false`)
                     Whether the plugin should report when it is enabled and
                     disabled in the command line.
+
+
+                                            *copyright-updater-style.advanced*
+style.advanced      Type: `boolean` (default: `true`)
+                    The style to use and expect copyright statements to
+                    follow. If `true`, advanced style is used, otherwise
+                    simple style is used. See |copyright-updater-styles|.
+
+
+                                              *copyright-updater-style.force*
+style.force         Type: `boolean` (default: `false`)
+                    Force the configured style on existing copyright lines.
+                    Only has an effect if 'style.advanced' is set to false,
+                    and will force advanced ranges to a single range.
 
 
                                            *copyright-updater-mappings.toggle*
@@ -92,6 +112,24 @@ filetypes           Type: `list` (default: `{}`)
                     |copyright-updater-whitelist| is set to `true`, the list
                     becomes a white list.
 
+==============================================================================
+STYLES                                              *copyright-updater-styles*
+
+Two styles are supported - Advanced and Simple. All styles allow for an
+optional `(c)`, `©`, or `&copy` between the word `copyright` and the first year.
+The word `copyright` is matched in any case. Any amount of space is allowed
+between `copyright`, the optional symbol, the year separators (`-` and `,`),
+and the years.
+
+    Styles:~
+       Advanced     Allows multiple ranges separated by commas. E.g.:
+>
+                        Copyright (c) 2007,2009-2012,2014,2016,2018-2020
+<
+         Simple     Only allow a single range - no gabs. E.g:
+>
+                        Copyright © 2007-2020
+<
 ==============================================================================
 COMMANDS                                          *copyright-updater-commands*
 

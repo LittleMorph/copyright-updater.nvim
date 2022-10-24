@@ -6,26 +6,6 @@ Inspired by [Vim Tip 1521](https://vim.fandom.com/wiki/Automatically_Update_Copy
 
 Updates any line that matches (case insensitively) this simplified regex: `copyright ((c)|©|&copy;)? [0-9]{4}`.
 
-Example lines before update:
-
-```
-# Copyright (c) 2018-2021 Corp A/S
-# copyright &copy; 2021 Corp A/S
-# COPYRIGHT © 2019 Corp A/S
-# CoPyRiGhT 2018-2019,2021 Corp A/S
-# Copyright (c) 2018-2020
-```
-
-After copyright update:
-
-```
-# Copyright (c) 2018-2022 Corp A/S
-# copyright &copy; 2021-2022 Corp A/S
-# COPYRIGHT © 2019,2022 Corp A/S
-# CoPyRiGhT 2018-2019,2021-2022 Corp A/S
-# Copyright (c) 2018-2020,2022
-```
-
 ## Requirements
 
 - Neovim >= 0.7.0
@@ -75,6 +55,12 @@ require('copyright-updater').setup {
     -- Print status when enabling, disabling, or toggling the plugin
     silent = false,
     -- To disable a key mapping, either assign it an empty value or nil
+    -- Advanced style allows multiple ranges separated by comma
+    -- Simple (non-advanced) style only use a single range
+    style = {
+        advanced = true,
+        force = false,   -- Allow reducing advanced style to simple style
+    },
     mappings = {
         toggle = '<leader>C',  -- Toggle the plugin on/off
         enable = nil,  -- Enable the plugin globally
@@ -89,3 +75,84 @@ require('copyright-updater').setup {
 ```
 
 See `:help copyright-updater` once the plugin is installed for more details.
+
+## Examples
+
+All examples assume the current year is 2022.
+
+### Advanced style
+
+```lua
+style = {
+    advanced = true,
+    force = false -- Has no effect when advanced is set to true
+}
+```
+
+Before update:
+
+```
+# Copyright (c) 2018-2021 Corp A/S
+# copyright &copy; 2021 Corp A/S
+# COPYRIGHT © 2019 Corp A/S
+# CoPyRiGhT 2018-2019,2021 Corp A/S
+# Copyright (c) 2018-2020
+```
+
+After update:
+
+```
+# Copyright (c) 2018-2022 Corp A/S
+# copyright &copy; 2021-2022 Corp A/S
+# COPYRIGHT © 2019,2022 Corp A/S
+# CoPyRiGhT 2018-2019,2021-2022 Corp A/S
+# Copyright (c) 2018-2020,2022
+```
+
+### Simple style
+
+```lua
+style = {
+    advanced = false,
+    force = false
+}
+```
+
+Before update:
+
+```
+# Copyright (c) 2018-2021 Corp A/S
+# copyright &copy; 2021 Corp A/S
+# COPYRIGHT © 2019 Corp A/S
+```
+
+After update:
+
+```
+# Copyright (c) 2018-2022 Corp A/S
+# copyright &copy; 2021-2022 Corp A/S
+# COPYRIGHT © 2019-2022 Corp A/S
+```
+
+### Simple style forced
+
+```lua
+style = {
+    advanced = false,
+    force = true
+}
+```
+
+Before update:
+
+```
+# CoPyRiGhT 2018-2019,2021 Corp A/S
+# Copyright (c) 2018,2020
+```
+
+After update:
+
+```
+# CoPyRiGhT 2019-2022 Corp A/S
+# Copyright (c) 2018-2022
+```
