@@ -9,6 +9,7 @@ Updates any line that matches (case insensitively) this simplified regex: `copyr
 ## Requirements
 
 - Neovim >= 0.7.0
+- [plenary.nvim](https://github.com/nvim-lua/plenary.nvim) (for running tests)
 
 ## Installation
 
