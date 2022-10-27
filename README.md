@@ -55,23 +55,31 @@ require('copyright-updater').setup {
     enabled = true,
     -- Print status when enabling, disabling, or toggling the plugin
     silent = false,
-    -- To disable a key mapping, either assign it an empty value or nil
     -- Advanced style allows multiple ranges separated by comma
     -- Simple (non-advanced) style only use a single range
     style = {
-        advanced = true,
-        force = false,   -- Allow reducing advanced style to simple style
+        -- Advanced style allows multiple ranges separated by comma
+        -- Simple style use only a single range
+        kind = 'advanced',
+        simple = {
+            force = false, -- Allow reducing advanced style to simple style
+        }
     },
+    -- To disable a key mapping, either assign it an empty value or nil
     mappings = {
         toggle = '<leader>C',  -- Toggle the plugin on/off
         enable = nil,  -- Enable the plugin globally
         disable = nil, -- Disable the plugin globally
         update = nil   -- Force update current buffer
     },
-    -- Change filetypes list to a whitelist (as opposed to a blacklist)
-    whitelist = false,
-    -- List of file types to blacklist (or whitelist if whitelist=true)
-    filetypes = {}
+    limiters = {
+        files = {
+            -- Change the types list from a blacklist to a whitelist
+            type_whitelist = false,
+            -- List of file types to blacklist (or whitelist)
+            types = {}
+        }
+    }
 }
 ```
 

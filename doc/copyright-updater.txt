@@ -30,11 +30,13 @@ Full default configuration:
         enabled = true,
         -- Print status when enabling, disabling, or toggling the plugin
         silent = false,
-        -- Advanced style allows multiple ranges separated by comma
-        -- Simple (non-advanced) style only use a single range
         style = {
-            advanced = true,
-            force = false,   -- Allow reducing advanced style to simple style
+            -- Advanced style allows multiple ranges separated by comma
+            -- Simple style use only a single range
+            kind = 'advanced', -- advanced | simple
+            simple = {
+                force = false, -- Allow reducing advanced style to simple style
+            }
         },
         -- To disable a key mapping, either assign it an empty value or nil
         mappings = {
@@ -43,10 +45,14 @@ Full default configuration:
             disable = nil, -- Disable the plugin globally
             update = nil   -- Force update current buffer
         },
-        -- Change filetypes list to a whitelist (as opposed to a blacklist)
-        whitelist = false,
-        -- List of file types to blacklist (or whitelist if whitelist=true)
-        filetypes = {}
+        limiters = {
+            files = {
+                -- Change the types list from a blacklist to a whitelist
+                type_whitelist = false,
+                -- List of file types to blacklist (or whitelist)
+                types = {}
+            }
+        }
     }
 <
 
@@ -63,18 +69,18 @@ silent              Type: `boolean` (default: `false`)
                     disabled in the command line.
 
 
-                                            *copyright-updater-style.advanced*
-style.advanced      Type: `boolean` (default: `true`)
+                                                *copyright-updater-style.kind*
+style.kind          Type: `string` (default: `advanced`)
                     The style to use and expect copyright statements to
-                    follow. If `true`, advanced style is used, otherwise
-                    simple style is used. See |copyright-updater-styles|.
+                    follow. Possible values are `advanced` and `simple`. See
+                    |copyright-updater-styles|.
 
 
-                                              *copyright-updater-style.force*
-style.force         Type: `boolean` (default: `false`)
-                    Force the configured style on existing copyright lines.
-                    Only has an effect if 'style.advanced' is set to false,
-                    and will force advanced ranges to a single range.
+                                        *copyright-updater-style.simple.force*
+style.simple.force  Type: `boolean` (default: `false`)
+                    Force the simple style on existing copyright lines. Only
+                    has an effect if 'style.kind' is set to `advanced`, and
+                    will force advanced ranges to a single range.
 
 
                                            *copyright-updater-mappings.toggle*
@@ -98,19 +104,22 @@ mappings.update     Type: `string` (default: `nil`)
                     same effect as calling |:UpdateCopyright|.
 
 
-                                                 *copyright-updater-whitelist*
-whitelist           Type: `boolean` (default: `false`)
-                    Turn the filetypes list (|copyright-updater-filetypes|)
-                    into a white list. If set to the default value of `false`,
-                    the filetypes list is a blacklist.
-
-
-                                                 *copyright-updater-filetypes*
-filetypes           Type: `list` (default: `{}`)
+                                      *copyright-updater-limiters.files.types*
+limiters.files.types
+                    Type: `list` (default: `{}`)
                     List of file types to blacklist so the plugin wont update
                     copyright statements in files of those types. If
-                    |copyright-updater-whitelist| is set to `true`, the list
-                    becomes a white list.
+                    |copyright-updater-limiters.files.type_whitelist| is set
+                    to `true`, the list becomes a white list.
+
+
+                             *copyright-updater-limiters.files.type_whitelist*
+limiters.files.type_whitelist
+                    Type: `boolean` (default: `false`)
+                    Turn the filetypes list into a white list
+                    (|copyright-updater-limiters.files.types|). If set to the
+                    default value of `false`, the filetypes list is a
+                    blacklist.
 
 ==============================================================================
 STYLES                                              *copyright-updater-styles*

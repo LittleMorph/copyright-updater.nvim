@@ -1,9 +1,9 @@
 local copyright_updater = require("copyright-updater")
 describe("copyright_updater", function()
     for _, setup in ipairs {
-        { name = 'advanced', style = { advanced = false, force = true } },
-        { name = 'simple', style = { advanced = false, force = true } },
-        { name = 'forced simple', style = { advanced = false, force = true } }
+        { name = 'advanced', style = { kind = 'advanced' } },
+        { name = 'simple', style = { kind = 'simple', simple = { force = false } } },
+        { name = 'forced simple', style = { kind = 'simple', simple = { force = true } } }
     } do
         describe(":UpdateCopyright (" .. setup.name .. " style)", function()
 
@@ -119,16 +119,6 @@ describe("copyright_updater", function()
                     "# copyright © 2018-" .. os.date("%Y") .. " Corp A/S",
                     "# CoPyRiGhT &copy; 2018-" .. os.date("%Y") .. " Corp A/S",
                     "# CopyRight 2018-" .. os.date("%Y") .. " Corp A/S"
-                })
-            end)
-
-            it("should not care that existing ranges go backwards in time", function()
-                vim .api.nvim_buf_set_lines(0, 0, -1, false, {
-                    "# COPYRIGHT 2018-2016 Corp A/S",
-                })
-                vim.cmd(":UpdateCopyright")
-                assert.same(vim.api.nvim_buf_get_lines(0, 0, -1, false), {
-                    "# COPYRIGHT 2018-" .. os.date("%Y") .. " Corp A/S",
                 })
             end)
         end)

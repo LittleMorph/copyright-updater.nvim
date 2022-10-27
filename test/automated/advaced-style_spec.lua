@@ -6,8 +6,7 @@ describe("copyright_updater", function()
             copyright_updater.setup({
                 silent = true,
                 style = {
-                    advanced = true,
-                    force = false
+                    kind = 'advanced',
                 }
             })
         end)
@@ -49,6 +48,16 @@ describe("copyright_updater", function()
                 "# Copyright " .. os.date("%Y") - 1 .. "-" .. os.date("%Y") .. " Corp A/S",
                 "# Copyright 2019-2018," .. os.date("%Y") - 1 .. "-" .. os.date("%Y") .. " Corp A/S",
                 "# Copyright " .. os.date("%Y") .. " Corp A/S"
+            })
+        end)
+
+        it("should not care that existing ranges go backwards in time", function()
+            vim .api.nvim_buf_set_lines(0, 0, -1, false, {
+                "# COPYRIGHT 2020,2018-2016 Corp A/S",
+            })
+            vim.cmd(":UpdateCopyright")
+            assert.same(vim.api.nvim_buf_get_lines(0, 0, -1, false), {
+                "# COPYRIGHT 2020,2018-2016," .. os.date("%Y") .. " Corp A/S",
             })
         end)
     end)

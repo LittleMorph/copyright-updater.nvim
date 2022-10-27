@@ -11,8 +11,10 @@ local options = {
     enabled = true,
     silent = false,
     style = {
-        advanced = true,
-        force = false,   -- Allow removing existing info
+        kind = 'advanced', -- advanced | simple
+        simple = {
+            force = false -- Allow removing existing info
+        }
     },
     mappings = {
         toggle = '<leader>C',
@@ -20,8 +22,12 @@ local options = {
         disable = nil,
         update = nil
     },
-    whitelist = false,
-    filetypes = {}
+    limiters = {
+        files = {
+            type_whitelist = false,
+            types = {}
+        }
+    }
 }
 
 local function append_comma_clause()
@@ -74,10 +80,10 @@ function M.update(force)
             return
         end
 
-        if options.whitelist then
+        if options.limiters.files.type_whitelist then
             -- File types are white-listed
             local whitelisted = false
-            for _, ft in pairs(options.filetypes) do
+            for _, ft in pairs(options.limiters.files.types) do
                 if ft == vim.bo.filetype then
                     whitelisted = true
                 end
@@ -87,7 +93,7 @@ function M.update(force)
             end
         else
             -- File types are blacklisted
-            for _, ft in pairs(options.filetypes) do
+            for _, ft in pairs(options.limiters.files.types) do
                 if ft == vim.bo.filetype then
                     return
                 end
@@ -98,16 +104,20 @@ function M.update(force)
     local report = vim.api.nvim_get_option('report')
     if options.silent then vim.opt.report = 10000 end -- disable reporting
 
-    if options.style.advanced then
+    if options.style.kind == 'advanced' then
         -- Append comma clauses first to prevent range update from spanning skipped years
         append_comma_clause()
         update_range_clause()
-    elseif options.style.force then
-        -- Collapse advanced copyright lines to simple ones
-        collapse_to_range_clause()
+    elseif options.style.kind == 'simple' then
+        if options.style.simple.force then
+            -- Collapse advanced copyright lines to simple ones
+            collapse_to_range_clause()
+        else
+            -- Update only simple lines
+            update_range_clause()
+        end
     else
-        -- Update only simple lines
-        update_range_clause()
+        vim.api.nvim_err_writeln('copyright-updater.nvim unknown option value for style.kind')
     end
 
     if options.silent then vim.opt.report = report end -- restore reporting
@@ -134,19 +144,30 @@ end
 local function verify_options()
     assert(type(options.enabled) == "boolean", "Option 'enabled' must be either true or false")
     assert(type(options.silent) == "boolean", "Option 'silent' must be either true or false")
-    assert(type(options.style.advanced) == "boolean", "Option 'style.advanced' must be either true or false")
-    assert(type(options.style.force) == "boolean", "Option 'style.force' must be either true or false")
-    assert(type(options.whitelist) == "boolean", "Option 'whitelist' must be either true or false")
 
+    -- style
+    assert(type(options.style) == "table", "Option 'style' must be a table")
+    assert(type(options.style.kind) == "string" and
+        (options.style.kind == "advanced" or options.style.kind == "simple"),
+        "Option 'style.kind' must be either 'advanced' or 'simple'")
+    assert(type(options.style.simple) == "table", "Option 'style.simple' must be a table")
+    assert(type(options.style.simple.force) == "boolean", "Option 'style.simple.force' must be either true or false")
+
+    -- mappings
     assert(type(options.mappings) == "table", "Option 'mappings' must be a table")
     assert(type(options.mappings.toggle) == "string" or type(options.mappings.update) == "nil", "Option 'mappings.toggle' must be a string or nil")
     assert(type(options.mappings.update) == "string" or type(options.mappings.update) == "nil", "Option 'mappings.update' must be a string or nil")
     assert(type(options.mappings.enable) == "string" or type(options.mappings.update) == "nil", "Option 'mappings.enable' must be a string or nil")
     assert(type(options.mappings.disable) == "string" or type(options.mappings.update) == "nil", "Option 'mappings.disable' must be a string or nil")
 
-    assert(type(options.filetypes) == "table", "Option 'filetypes' must be a table")
-    for i,_ in pairs(options.filetypes) do
-        assert(type(options.filetypes[i]) == "string", "Entries in option table 'filtypes' must be of type string")
+    -- limiters
+    assert(type(options.limiters) == "table", "Option 'limiters' must be a table")
+    assert(type(options.limiters.files) == "table", "Option 'limiters.files' must be a table")
+    assert(type(options.limiters.files.types) == "table", "Option 'limiters.files.types' must be a table")
+    assert(type(options.limiters.files.type_whitelist) == "boolean", "Option 'limiters.files.type_whitelist' must be either true or false")
+
+    for i,_ in pairs(options.limiters.files.types) do
+        assert(type(options.limiters.files.types[i]) == "string", "Entries in option table 'limiters.files.types' must be of type string")
     end
 end
 
