@@ -7,7 +7,7 @@ CONTENTS                                                   *copyright-updater*
     Introduction ........................... |copyright-updater-intro|
     Configuration .......................... |copyright-updater-configuration|
     Commands ............................... |copyright-updater-commands|
-    Functions .............................. *copyright-updater-functions*
+    Functions .............................. |copyright-updater-functions|
 
 ==============================================================================
 INTRODUCTION                                         *copyright-updater-intro*
@@ -34,6 +34,10 @@ Full default configuration:
             -- Advanced style allows multiple ranges separated by comma
             -- Simple style use only a single range
             kind = 'advanced', -- advanced | simple
+            advanced = {
+                space_after_comma = false,
+                force = false -- Apply the space_after_comma setting to existing commas
+            },
             simple = {
                 force = false, -- Allow reducing advanced style to simple style
             }
@@ -77,10 +81,25 @@ style.kind          Type: `string` (default: `advanced`)
                     |copyright-updater-styles|.
 
 
+                          *copyright-updater-style.advanced.space_after_comma*
+style.advanced.space_after_comma
+                    Type: `boolean` (default: `false`)
+                    Add a space after each added comma in advanced style.
+
+
+                                      *copyright-updater-style.advanced.force*
+style.advanced.force
+                    Type: `boolean` (default: `false`)
+
+                    Force the configured `space_after_comma` setting on
+                    existing copyright lines. Only has an effect if
+                    'style.kind' is set to `advanced`.
+
+
                                         *copyright-updater-style.simple.force*
 style.simple.force  Type: `boolean` (default: `false`)
                     Force the simple style on existing copyright lines. Only
-                    has an effect if 'style.kind' is set to `advanced`, and
+                    has an effect if 'style.kind' is set to `simple`, and
                     will force advanced ranges to a single range.
 
 

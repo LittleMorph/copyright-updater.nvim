@@ -12,6 +12,10 @@ local options = {
     silent = false,
     style = {
         kind = 'advanced', -- advanced | simple
+        advanced = {
+            space_after_comma = false,
+            force = false -- Apply the space_after_comma setting to existing commas
+        },
         simple = {
             force = false -- Allow removing existing info
         }
@@ -32,6 +36,8 @@ local options = {
 }
 
 local function append_comma_clause()
+    local space = options.style.advanced.space_after_comma and ' ' or ''
+
     vim.api.nvim_exec(options.limiters.range .. 's:' ..
         '\\cCOPYRIGHT\\s*\\%((c)\\|©\\|&copy;\\)\\?\\s*' ..
         '\\%([0-9]\\{4}\\(-[0-9]\\{4\\}\\)\\?,\\s*\\)*' ..
@@ -45,7 +51,18 @@ local function append_comma_clause()
         '\\)' ..
         '\\ze' ..
         '\\%(\\%([0-9]\\{4\\}\\)\\@!.\\)*$:' ..
-        '&,' .. os.date("%Y") .. ':e',
+        '&,' .. space .. os.date("%Y") .. ':e',
+        false)
+end
+
+local function update_comma_clauses()
+    local space = options.style.advanced.space_after_comma and ' ' or ''
+
+    vim.api.nvim_exec(options.limiters.range .. 'g:' ..
+        '\\cCOPYRIGHT\\s*\\%((c)\\|©\\|&copy;\\)\\?\\s*' ..
+        ':s:' ..
+        '\\([0-9]\\{4\\}\\)\\s*,\\s*:' ..
+        '\\1,' .. space .. ':g',
         false)
 end
 
@@ -66,7 +83,7 @@ local function collapse_to_range_clause()
     vim.api.nvim_exec(options.limiters.range .. 's:' ..
         '\\cCOPYRIGHT\\s*\\%((c)\\|©\\|&copy;\\)\\?\\s*' ..
         '\\zs' ..
-        '\\%(' .. os.date("%Y") .. '\\)\\@!\\([0-9]\\{4}\\)\\%([,-]\\?\\%([0-9]\\{4\\}\\)\\)*' ..
+        '\\%(' .. os.date("%Y") .. '\\)\\@!\\([0-9]\\{4}\\)\\%(\\s*[,-]\\?\\s*\\%([0-9]\\{4\\}\\)\\)*' ..
         '\\ze' ..
         '\\%(\\%([0-9]\\{4\\}\\)\\@!.\\)*$:' ..
         '\\1-' .. os.date("%Y") .. ':e',
@@ -109,6 +126,9 @@ function M.update(force)
         -- Append comma clauses first to prevent range update from spanning skipped years
         append_comma_clause()
         update_range_clause()
+        if options.style.advanced.force then
+            update_comma_clauses()
+        end
     elseif options.style.kind == 'simple' then
         if options.style.simple.force then
             -- Collapse advanced copyright lines to simple ones
@@ -153,6 +173,8 @@ local function verify_options()
         "Option 'style.kind' must be either 'advanced' or 'simple'")
     assert(type(options.style.simple) == "table", "Option 'style.simple' must be a table")
     assert(type(options.style.simple.force) == "boolean", "Option 'style.simple.force' must be either true or false")
+    assert(type(options.style.advanced) == "table", "Option 'style.advanced' must be a table")
+    assert(type(options.style.advanced.space_after_comma) == "boolean", "Option 'style.advanced.space_after_comma' must be either true or false")
 
     -- mappings
     assert(type(options.mappings) == "table", "Option 'mappings' must be a table")

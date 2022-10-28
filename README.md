@@ -61,6 +61,10 @@ require('copyright-updater').setup {
         -- Advanced style allows multiple ranges separated by comma
         -- Simple style use only a single range
         kind = 'advanced',
+        advanced = {
+            space_after_comma = false,
+            force = false -- Apply the space_after_comma setting to existing commas
+        },
         simple = {
             force = false, -- Allow reducing advanced style to simple style
         }
