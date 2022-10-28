@@ -199,8 +199,8 @@ function M.setup(opts)
         pattern = "*",
         callback = function() M.update() end
     })
-end
 
-vim.api.nvim_create_user_command('UpdateCopyright', function() M.update(true) end, {})
+    vim.api.nvim_create_user_command('UpdateCopyright', function() M.update(true) end, {})
+end
 
 return M
