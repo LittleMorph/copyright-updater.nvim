@@ -23,6 +23,7 @@ local options = {
         update = nil
     },
     limiters = {
+        range = '%', -- substitution range
         files = {
             type_whitelist = false,
             types = {}
@@ -31,7 +32,7 @@ local options = {
 }
 
 local function append_comma_clause()
-    vim.api.nvim_exec( '%s:' ..
+    vim.api.nvim_exec(options.limiters.range .. 's:' ..
         '\\cCOPYRIGHT\\s*\\%((c)\\|©\\|&copy;\\)\\?\\s*' ..
         '\\%([0-9]\\{4}\\(-[0-9]\\{4\\}\\)\\?,\\s*\\)*' ..
         '\\zs' ..
@@ -49,7 +50,7 @@ local function append_comma_clause()
 end
 
 local function update_range_clause()
-    vim.api.nvim_exec('%s:' ..
+    vim.api.nvim_exec(options.limiters.range .. 's:' ..
         '\\cCOPYRIGHT\\s*\\%((c)\\|©\\|&copy;\\)\\?\\s*' ..
         '\\%([0-9]\\{4}\\%(-[0-9]\\{4\\}\\)\\?,\\s*\\)*' ..
         '\\zs' ..
@@ -62,7 +63,7 @@ local function update_range_clause()
 end
 
 local function collapse_to_range_clause()
-    vim.api.nvim_exec('%s:' ..
+    vim.api.nvim_exec(options.limiters.range .. 's:' ..
         '\\cCOPYRIGHT\\s*\\%((c)\\|©\\|&copy;\\)\\?\\s*' ..
         '\\zs' ..
         '\\%(' .. os.date("%Y") .. '\\)\\@!\\([0-9]\\{4}\\)\\%([,-]\\?\\%([0-9]\\{4\\}\\)\\)*' ..
@@ -162,6 +163,7 @@ local function verify_options()
 
     -- limiters
     assert(type(options.limiters) == "table", "Option 'limiters' must be a table")
+    assert(type(options.limiters.range) == "string", "Option 'limiters.range' must be a string")
     assert(type(options.limiters.files) == "table", "Option 'limiters.files' must be a table")
     assert(type(options.limiters.files.types) == "table", "Option 'limiters.files.types' must be a table")
     assert(type(options.limiters.files.type_whitelist) == "boolean", "Option 'limiters.files.type_whitelist' must be either true or false")

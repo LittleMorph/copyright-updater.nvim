@@ -73,6 +73,7 @@ require('copyright-updater').setup {
         update = nil   -- Force update current buffer
     },
     limiters = {
+        range = '%', -- Only update copyright statements in this range
         files = {
             -- Change the types list from a blacklist to a whitelist
             type_whitelist = false,
