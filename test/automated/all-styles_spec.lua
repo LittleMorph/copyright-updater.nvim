@@ -19,7 +19,7 @@ describe("copyright_updater", function()
             end)
 
             it("should match with all three copyright symbols: (c), ©, &copy;", function()
-                vim .api.nvim_buf_set_lines(0, 0, -1, false, {
+                vim.api.nvim_buf_set_lines(0, 0, -1, false, {
                     "# Copyright (c) 2018-" .. os.date("%Y") - 1 .. " Corp A/S",
                     "# Copyright © 2018-" .. os.date("%Y") - 1 .. " Corp A/S",
                     "# Copyright &copy; 2018-" .. os.date("%Y") - 1 .. " Corp A/S"
@@ -33,7 +33,7 @@ describe("copyright_updater", function()
             end)
 
             it("should handle any leading characters", function()
-                vim .api.nvim_buf_set_lines(0, 0, -1, false, {
+                vim.api.nvim_buf_set_lines(0, 0, -1, false, {
                     "# Copyright (c) 2018-" .. os.date("%Y") - 1 .. " Corp A/S",
                     "#Copyright (c) 2018-" .. os.date("%Y") - 1 .. " Corp A/S",
                     "Copyright &copy; 2018-" .. os.date("%Y") - 1 .. " Corp A/S",
@@ -59,7 +59,7 @@ describe("copyright_updater", function()
             end)
 
             it("should handle any trailing characters", function()
-                vim .api.nvim_buf_set_lines(0, 0, -1, false, {
+                vim.api.nvim_buf_set_lines(0, 0, -1, false, {
                     "# Copyright (c) 2018-" .. os.date("%Y") - 1 .. " Corp A/S",
                     "# Copyright © 2018-" .. os.date("%Y") - 1 .. "",
                     "# Copyright &copy; 2018-" .. os.date("%Y") - 1 .. "Corp A/S"
@@ -73,7 +73,7 @@ describe("copyright_updater", function()
             end)
 
             it("should not care about spaces around copyright symbol", function()
-                vim .api.nvim_buf_set_lines(0, 0, -1, false, {
+                vim.api.nvim_buf_set_lines(0, 0, -1, false, {
                     "# Copyright(c)2018-" .. os.date("%Y") - 1 .. " Corp A/S",
                     "# Copyright©2018-" .. os.date("%Y") - 1 .. " Corp A/S",
                     "# Copyright&copy;2018-" .. os.date("%Y") - 1 .. " Corp A/S",
@@ -93,7 +93,7 @@ describe("copyright_updater", function()
             end)
 
             it("should not care if the copyright symbol is missing", function()
-                vim .api.nvim_buf_set_lines(0, 0, -1, false, {
+                vim.api.nvim_buf_set_lines(0, 0, -1, false, {
                     "# Copyright 2018-" .. os.date("%Y") - 1 .. " Corp A/S",
                     "# Copyright    2018-" .. os.date("%Y") - 1 .. " Corp A/S",
                     "# Copyright2018-" .. os.date("%Y") - 1 .. " Corp A/S",
@@ -107,7 +107,7 @@ describe("copyright_updater", function()
             end)
 
             it("should not care about the casing of copyright", function()
-                vim .api.nvim_buf_set_lines(0, 0, -1, false, {
+                vim.api.nvim_buf_set_lines(0, 0, -1, false, {
                     "# COPYRIGHT (c) 2018-" .. os.date("%Y") - 1 .. " Corp A/S",
                     "# copyright © 2018-" .. os.date("%Y") - 1 .. " Corp A/S",
                     "# CoPyRiGhT &copy; 2018-" .. os.date("%Y") - 1 .. " Corp A/S",

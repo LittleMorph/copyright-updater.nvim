@@ -19,7 +19,7 @@ describe("copyright_updater", function()
         end)
 
         it("should leave commas alone", function()
-            vim .api.nvim_buf_set_lines(0, 0, -1, false, {
+            vim.api.nvim_buf_set_lines(0, 0, -1, false, {
                 "# Copyright 2018-2019," .. os.date("%Y") - 1 .. " Corp A/S",
                 "# Copyright 2018," .. os.date("%Y") - 2 .. " Corp A/S"
             })
@@ -31,7 +31,7 @@ describe("copyright_updater", function()
         end)
 
         it("should update or create range with the last year listed", function()
-            vim .api.nvim_buf_set_lines(0, 0, -1, false, {
+            vim.api.nvim_buf_set_lines(0, 0, -1, false, {
                 "# Copyright 2019 Corp A/S",
                 "# Copyright 2018-" .. os.date("%Y") - 1 .. " Corp A/S",
                 "# Copyright 2018-" .. os.date("%Y") - 2 .. " Corp A/S",
@@ -49,7 +49,7 @@ describe("copyright_updater", function()
         end)
 
         it("should not care that existing ranges go backwards in time", function()
-            vim .api.nvim_buf_set_lines(0, 0, -1, false, {
+            vim.api.nvim_buf_set_lines(0, 0, -1, false, {
                 "# COPYRIGHT 2020,2018-2016 Corp A/S",
             })
             vim.cmd(":UpdateCopyright")
@@ -114,7 +114,7 @@ describe("copyright_updater", function()
         end)
 
         it("should not care that existing ranges go backwards in time", function()
-            vim .api.nvim_buf_set_lines(0, 0, -1, false, {
+            vim.api.nvim_buf_set_lines(0, 0, -1, false, {
                 "# COPYRIGHT 2020,2018-2016 Corp A/S",
             })
             vim.cmd(":UpdateCopyright")

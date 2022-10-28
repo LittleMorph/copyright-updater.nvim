@@ -74,7 +74,7 @@ describe("copyright_updater", function()
                 end)
 
                 it("should update the correct lines (range: '" .. setup.range .. "')", function()
-                    vim .api.nvim_buf_set_lines(0, 0, -1, false, {
+                    vim.api.nvim_buf_set_lines(0, 0, -1, false, {
                         "# Copyright 2018-" .. os.date("%Y") - 1 .. " Corp A/S",
                         "# Copyright 2018-" .. os.date("%Y") - 1 .. " Corp A/S",
                         "# Copyright 2018-" .. os.date("%Y") - 1 .. " Corp A/S",
