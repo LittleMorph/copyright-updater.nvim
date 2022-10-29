@@ -51,6 +51,7 @@ Full default configuration:
         },
         limiters = {
             range = '%', -- Only update copyright statements in this range
+            post_pattern = '', -- E.g. a company name to match after the year list
             files = {
                 -- Change the types list from a blacklist to a whitelist
                 type_whitelist = false,
@@ -129,6 +130,25 @@ limiters.range      Type: `string` (default: `%`)
                     Set the [range] on which copyright-updater should operate.
                     Only copyright statements found within the set range will
                     be updated. Defaults to the entire file.
+
+
+                                     *copyright-updater-limiters.post_pattern*
+limiters.post_pattern
+                    Type: `string` (default: `''`)
+                    Pattern that must match post the year list in updated
+                    copyright lines. Can be a simple string, or complex regex.
+                    E.g. to match only company names "Corp A/S" and "New Org
+                    Inc", us a patter like this:
+>
+                        \\%(Corp A/S\\|New Org Inc\\)
+<
+                    Note that backslash characters must be escaped with
+                    another backslash. See |pattern.txt| for more info on
+                    supported regex.
+
+                    Note too that the pattern is applied at the end of the
+                    copyright line, so if further characters are expected,
+                    append a `.*` at the end.
 
 
                                       *copyright-updater-limiters.files.types*

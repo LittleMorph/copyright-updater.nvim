@@ -78,6 +78,7 @@ require('copyright-updater').setup {
     },
     limiters = {
         range = '%', -- Only update copyright statements in this range
+        post_pattern = '', -- E.g. a company name to match after the year list
         files = {
             -- Change the types list from a blacklist to a whitelist
             type_whitelist = false,

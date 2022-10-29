@@ -28,6 +28,7 @@ local options = {
     },
     limiters = {
         range = '%', -- substitution range
+        post_pattern = '',
         files = {
             type_whitelist = false,
             types = {}
@@ -50,7 +51,8 @@ local function append_comma_clause()
         '\\%(' .. (os.date("%Y") - 1) .. '\\)\\@!\\%([0-9]\\)\\{4\\}' ..
         '\\)' ..
         '\\ze' ..
-        '\\%(\\%([0-9]\\{4\\}\\)\\@!.\\)*$:' ..
+        '\\%(\\%([0-9]\\{4\\}\\)\\@!.\\)*' ..
+        options.limiters.post_pattern .. '$:' ..
         '&,' .. space .. os.date("%Y") .. ':e',
         false)
 end
@@ -60,6 +62,8 @@ local function update_comma_clauses()
 
     vim.api.nvim_exec(options.limiters.range .. 'g:' ..
         '\\cCOPYRIGHT\\s*\\%((c)\\|©\\|&copy;\\)\\?\\s*' ..
+        '.*' ..
+        options.limiters.post_pattern .. '$' ..
         ':s:' ..
         '\\([0-9]\\{4\\}\\)\\s*,\\s*:' ..
         '\\1,' .. space .. ':g',
@@ -74,7 +78,8 @@ local function update_range_clause()
         '\\%(' .. os.date("%Y") .. '\\)\\@!\\([0-9]\\{4\\}\\)' ..
         '\\%(-' .. os.date("%Y") .. '\\)\\@!\\%(-[0-9]\\{4\\}\\)\\?' ..
         '\\ze' ..
-        '\\%(\\%([0-9]\\{4\\}\\)\\@!.\\)*$:' ..
+        '\\%(\\%([0-9]\\{4\\}\\)\\@!.\\)*' ..
+        options.limiters.post_pattern .. '$:' ..
         '\\1-' .. os.date("%Y") .. ':e',
         false)
 end
@@ -85,7 +90,8 @@ local function collapse_to_range_clause()
         '\\zs' ..
         '\\%(' .. os.date("%Y") .. '\\)\\@!\\([0-9]\\{4}\\)\\%(\\s*[,-]\\?\\s*\\%([0-9]\\{4\\}\\)\\)*' ..
         '\\ze' ..
-        '\\%(\\%([0-9]\\{4\\}\\)\\@!.\\)*$:' ..
+        '\\%(\\%([0-9]\\{4\\}\\)\\@!.\\)*' ..
+        options.limiters.post_pattern .. '$:' ..
         '\\1-' .. os.date("%Y") .. ':e',
         false)
 end
@@ -186,6 +192,7 @@ local function verify_options()
     -- limiters
     assert(type(options.limiters) == "table", "Option 'limiters' must be a table")
     assert(type(options.limiters.range) == "string", "Option 'limiters.range' must be a string")
+    assert(type(options.limiters.post_pattern) == "string", "Option 'limiters.post_pattern' must be a table")
     assert(type(options.limiters.files) == "table", "Option 'limiters.files' must be a table")
     assert(type(options.limiters.files.types) == "table", "Option 'limiters.files.types' must be a table")
     assert(type(options.limiters.files.type_whitelist) == "boolean", "Option 'limiters.files.type_whitelist' must be either true or false")
