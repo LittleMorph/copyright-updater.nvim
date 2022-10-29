@@ -207,6 +207,11 @@ function M.setup(opts)
 
     verify_options()
 
+    -- escape colons - they are used at pattern delimiters internally
+    if options.limiters.post_pattern ~= '' then
+        options.limiters.post_pattern = string.gsub(options.limiters.post_pattern, ':', '\\:')
+    end
+
     -- Set key mappings
     if options.mappings.toggle ~= '' and options.mappings.toggle ~= nil then
         vim.api.nvim_set_keymap('n', options.mappings.toggle, '<cmd>lua require("copyright-updater").toggle()<CR>', {noremap=true, silent=true, desc='Toggle Copyright Updater'})

@@ -119,6 +119,37 @@ describe("copyright_updater", function()
                     "# Copyright © 2018-" .. os.date("%Y") - 1 .. " Foobar",
                 })
             end)
+
+            it("should work with a post pattern regex containing colons", function()
+                copyright_updater.setup({
+                    silent = true,
+                    style = setup.style,
+                    limiters = { post_pattern = "\\%(Colon:Name:Company\\|New Org Inc.\\).*" }
+                })
+                vim.api.nvim_buf_set_lines(0, 0, -1, false, {
+                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " Colon:Name:Company, All rights reserved",
+                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " Colon:Name:Company Trailing",
+                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " Colon:Name:Company",
+                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " New Org Inc., All rights reserved",
+                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " New Org Inc. Trailing",
+                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " New Org Inc.",
+                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " Foobar, All rights reserved",
+                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " Foobar Trailing",
+                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " Foobar",
+                })
+                vim.cmd(":UpdateCopyright")
+                assert.same(vim.api.nvim_buf_get_lines(0, 0, -1, false), {
+                    "# Copyright © 2018-" .. os.date("%Y") .. " Colon:Name:Company, All rights reserved",
+                    "# Copyright © 2018-" .. os.date("%Y") .. " Colon:Name:Company Trailing",
+                    "# Copyright © 2018-" .. os.date("%Y") .. " Colon:Name:Company",
+                    "# Copyright © 2018-" .. os.date("%Y") .. " New Org Inc., All rights reserved",
+                    "# Copyright © 2018-" .. os.date("%Y") .. " New Org Inc. Trailing",
+                    "# Copyright © 2018-" .. os.date("%Y") .. " New Org Inc.",
+                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " Foobar, All rights reserved",
+                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " Foobar Trailing",
+                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " Foobar",
+                })
+            end)
         end)
     end
 end)
