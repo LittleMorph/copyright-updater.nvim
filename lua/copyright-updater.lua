@@ -152,6 +152,11 @@ function M.update(opts)
     opts.range = opts.range or options.limiters.range
     opts.post_pat = opts.post_pat or options.limiters.post_pattern
 
+    if not vim.bo.modifiable then
+        vim.api.nvim_err_writeln('copyright-updater.nvim buffer is not modifiable')
+        return
+    end
+
     if not opts.force then
         if not options.enabled or not vim.bo.modified then
             return
