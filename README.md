@@ -4,7 +4,7 @@ A [Neovim](https://neovim.io) plugin to automatically update copyright messages 
 
 Inspired by [Vim Tip 1521](https://vim.fandom.com/wiki/Automatically_Update_Copyright_Notice_in_Files) by user Fritzophrenic.
 
-Updates any line that matches (case insensitively) this simplified regex: `copyright ((c)|©|&copy;)? [0-9]{4}`.
+Updates any line that matches (case insensitively) this simplified regex: `copyright ((c)|©|&copy;)? [0-9]{4}([-,][0-9]{4}`.
 
 ## Requirements
 
@@ -124,8 +124,7 @@ All examples assume the current year is 2022.
 
 ```lua
 style = {
-    advanced = true,
-    force = false -- Has no effect when advanced is set to true
+    kind = 'advanced'
 }
 ```
 
@@ -153,8 +152,10 @@ After update:
 
 ```lua
 style = {
-    advanced = false,
-    force = false
+    kind = 'simple',
+    simpel = {
+        force = false
+    }
 }
 ```
 
@@ -164,6 +165,7 @@ Before update:
 # Copyright (c) 2018-2021 Corp A/S
 # copyright &copy; 2021 Corp A/S
 # COPYRIGHT © 2019 Corp A/S
+# CoPyRiGhT 2018-2019,2021 Corp A/S
 ```
 
 After update:
@@ -172,14 +174,17 @@ After update:
 # Copyright (c) 2018-2022 Corp A/S
 # copyright &copy; 2021-2022 Corp A/S
 # COPYRIGHT © 2019-2022 Corp A/S
+# CoPyRiGhT 2018-2019,2021-2022 Corp A/S
 ```
 
 ### Simple style forced
 
 ```lua
 style = {
-    advanced = false,
-    force = true
+    kind = 'simple',
+    simpel = {
+        force = true
+    }
 }
 ```
 
@@ -196,3 +201,7 @@ After update:
 # CoPyRiGhT 2019-2022 Corp A/S
 # Copyright (c) 2018-2022
 ```
+
+## Found a bug?
+
+Please open an issue with a minimal config and buffer content to reproduce the issue.
