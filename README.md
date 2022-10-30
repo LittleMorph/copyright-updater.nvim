@@ -103,7 +103,12 @@ require('copyright-updater').setup {
             -- Change the types list from a blacklist to a whitelist
             type_whitelist = false,
             -- List of file types to blacklist (or whitelist)
-            types = {}
+            types = {},
+            -- Change the names list from a blacklist to a whitelist
+            name_whitelist = false,
+            -- List of file name patterns to blacklist (or whitelist)
+            -- Matches on the entire path, not just the filename
+            names = {}
         }
     }
 }

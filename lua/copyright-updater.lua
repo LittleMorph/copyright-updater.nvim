@@ -31,7 +31,9 @@ local options = {
         post_pattern = '',
         files = {
             type_whitelist = false,
-            types = {}
+            types = {},
+            name_whitelist = false,
+            names = {}
         }
     }
 }
@@ -119,6 +121,30 @@ local function within_filetype_limits()
     return true
 end
 
+local function within_filename_limits()
+    local file = vim.api.nvim_buf_get_name(0)
+    if options.limiters.files.name_whitelist then
+        -- File names are white-listed
+        local whitelisted = false
+        for _, pat in pairs(options.limiters.files.names) do
+            if vim.regex(pat):match_str(file) ~= nil then
+                whitelisted = true
+            end
+        end
+        if not whitelisted then
+            return false
+        end
+    else
+        -- File names are blacklisted
+        for _, pat in pairs(options.limiters.files.names) do
+            if vim.regex(pat):match_str(file) ~= nil then
+                return false
+            end
+        end
+    end
+    return true
+end
+
 function M.update(opts)
     opts = opts or {}
     opts.force = opts.force or false
@@ -130,6 +156,9 @@ function M.update(opts)
             return
         end
         if not within_filetype_limits() then
+            return
+        end
+        if not within_filename_limits() then
             return
         end
     end
@@ -204,10 +233,15 @@ local function verify_options()
     assert(type(options.limiters.post_pattern) == "string", "Option 'limiters.post_pattern' must be a table")
     assert(type(options.limiters.files) == "table", "Option 'limiters.files' must be a table")
     assert(type(options.limiters.files.types) == "table", "Option 'limiters.files.types' must be a table")
+    assert(type(options.limiters.files.names) == "table", "Option 'limiters.files.names' must be a table")
     assert(type(options.limiters.files.type_whitelist) == "boolean", "Option 'limiters.files.type_whitelist' must be either true or false")
+    assert(type(options.limiters.files.name_whitelist) == "boolean", "Option 'limiters.files.name_whitelist' must be either true or false")
 
     for i,_ in pairs(options.limiters.files.types) do
         assert(type(options.limiters.files.types[i]) == "string", "Entries in option table 'limiters.files.types' must be of type string")
+    end
+    for i,_ in pairs(options.limiters.files.names) do
+        assert(type(options.limiters.files.names[i]) == "string", "Entries in option table 'limiters.files.names' must be of type string")
     end
 end
 

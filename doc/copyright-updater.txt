@@ -56,7 +56,12 @@ Full default configuration:
                 -- Change the types list from a blacklist to a whitelist
                 type_whitelist = false,
                 -- List of file types to blacklist (or whitelist)
-                types = {}
+                types = {},
+                -- Change the names list from a blacklist to a whitelist
+                name_whitelist = false,
+                -- List of file name patterns to blacklist (or whitelist)
+                -- Matches on the entire path, not just the filename
+                names = {}
             }
         }
     }
@@ -170,6 +175,59 @@ limiters.files.type_whitelist
                     Turn the filetypes list into a white list
                     (|copyright-updater-limiters.files.types|). If set to the
                     default value of `false`, the filetypes list is a
+                    blacklist.
+
+
+                                      *copyright-updater-limiters.files.names*
+limiters.files.names
+                    Type: `list` (default: `{}`)
+
+                    List of file name regex patterns to blacklist so the
+                    plugin wont update copyright statements in files matching
+                    these names.
+                    If |copyright-updater-limiters.files.type_whitelist| is
+                    set to `true`, the list becomes a white list.
+
+                    Regexes are "magic" and case-sensitive by
+                    default, regardless of 'magic' and 'ignorecase'.
+
+                    Contrary to the `limiters.files.types` list, entries in
+                    this list are considered regex patterns that will be
+                    matched against the full path of the edited file. Useful
+                    to limit automatic copyright updates to e.g. specific
+                    project directories. Example pattern for project "My
+                    awesome project":
+>
+                        '/my-awesome-project/'
+<
+                    Be careful with too generic patterns in this list, as they
+                    might match unwanted files. E.g. consider the patterns:
+>
+                        'project.*',
+                        'temp'
+<
+                    Intended to match all project files and everything under
+                    temp directories. Because the patterns are matched against
+                    the entire file name path, they will also match things
+                    like the directory `project-foo` or a file named
+                    `temperature`. To avoid such unintended matches, take
+                    care to be as specific with the patterns as possible. A
+                    better way to accomplish the above example would be this:
+>
+                        '/project[^/]*$',
+                        '/temp/'
+<
+                    These patterns prevents `project` from being a directory,
+                    and ensures it is the beginning of a filename. In the same
+                    way `temp` is now forced to be the complete directory name.
+
+
+                             *copyright-updater-limiters.files.name_whitelist*
+limiters.files.name_whitelist
+                    Type: `boolean` (default: `false`)
+                    Turn the `files.names` list into a white list
+                    (|copyright-updater-limiters.files.names|). If set to the
+                    default value of `false`, the filenames list is a
                     blacklist.
 
 ==============================================================================
