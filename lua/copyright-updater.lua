@@ -36,10 +36,10 @@ local options = {
     }
 }
 
-local function append_comma_clause()
+local function append_comma_clause(range, post_pat)
     local space = options.style.advanced.space_after_comma and ' ' or ''
 
-    vim.api.nvim_exec(options.limiters.range .. 's:' ..
+    vim.api.nvim_exec(range .. 's:' ..
         '\\cCOPYRIGHT\\s*\\%((c)\\|©\\|&copy;\\)\\?\\s*' ..
         '\\%([0-9]\\{4}\\(-[0-9]\\{4\\}\\)\\?,\\s*\\)*' ..
         '\\zs' ..
@@ -52,26 +52,26 @@ local function append_comma_clause()
         '\\)' ..
         '\\ze' ..
         '\\%(\\%([0-9]\\{4\\}\\)\\@!.\\)*' ..
-        options.limiters.post_pattern .. '$:' ..
+        post_pat .. '$:' ..
         '&,' .. space .. os.date("%Y") .. ':e',
         false)
 end
 
-local function update_comma_clauses()
+local function update_comma_clauses(range, post_pat)
     local space = options.style.advanced.space_after_comma and ' ' or ''
 
-    vim.api.nvim_exec(options.limiters.range .. 'g:' ..
+    vim.api.nvim_exec(range .. 'g:' ..
         '\\cCOPYRIGHT\\s*\\%((c)\\|©\\|&copy;\\)\\?\\s*' ..
         '.*' ..
-        options.limiters.post_pattern .. '$' ..
+        post_pat .. '$' ..
         ':s:' ..
         '\\([0-9]\\{4\\}\\)\\s*,\\s*:' ..
         '\\1,' .. space .. ':g',
         false)
 end
 
-local function update_range_clause()
-    vim.api.nvim_exec(options.limiters.range .. 's:' ..
+local function update_range_clause(range, post_pat)
+    vim.api.nvim_exec(range .. 's:' ..
         '\\cCOPYRIGHT\\s*\\%((c)\\|©\\|&copy;\\)\\?\\s*' ..
         '\\%([0-9]\\{4}\\%(-[0-9]\\{4\\}\\)\\?,\\s*\\)*' ..
         '\\zs' ..
@@ -79,49 +79,58 @@ local function update_range_clause()
         '\\%(-' .. os.date("%Y") .. '\\)\\@!\\%(-[0-9]\\{4\\}\\)\\?' ..
         '\\ze' ..
         '\\%(\\%([0-9]\\{4\\}\\)\\@!.\\)*' ..
-        options.limiters.post_pattern .. '$:' ..
+        post_pat .. '$:' ..
         '\\1-' .. os.date("%Y") .. ':e',
         false)
 end
 
-local function collapse_to_range_clause()
-    vim.api.nvim_exec(options.limiters.range .. 's:' ..
+local function collapse_to_range_clause(range, post_pat)
+    vim.api.nvim_exec(range .. 's:' ..
         '\\cCOPYRIGHT\\s*\\%((c)\\|©\\|&copy;\\)\\?\\s*' ..
         '\\zs' ..
         '\\%(' .. os.date("%Y") .. '\\)\\@!\\([0-9]\\{4}\\)\\%(\\s*[,-]\\?\\s*\\%([0-9]\\{4\\}\\)\\)*' ..
         '\\ze' ..
         '\\%(\\%([0-9]\\{4\\}\\)\\@!.\\)*' ..
-        options.limiters.post_pattern .. '$:' ..
+        post_pat .. '$:' ..
         '\\1-' .. os.date("%Y") .. ':e',
         false)
 end
 
-function M.update(force)
-    force = force or false
+local function within_filetype_limits()
+    if options.limiters.files.type_whitelist then
+        -- File types are white-listed
+        local whitelisted = false
+        for _, ft in pairs(options.limiters.files.types) do
+            if ft == vim.bo.filetype then
+                whitelisted = true
+            end
+        end
+        if not whitelisted then
+            return false
+        end
+    else
+        -- File types are blacklisted
+        for _, ft in pairs(options.limiters.files.types) do
+            if ft == vim.bo.filetype then
+                return false
+            end
+        end
+    end
+    return true
+end
 
-    if not force then
+function M.update(opts)
+    opts = opts or {}
+    opts.force = opts.force or false
+    opts.range = opts.range or options.limiters.range
+    opts.post_pat = opts.post_pat or options.limiters.post_pattern
+
+    if not opts.force then
         if not options.enabled or not vim.bo.modified then
             return
         end
-
-        if options.limiters.files.type_whitelist then
-            -- File types are white-listed
-            local whitelisted = false
-            for _, ft in pairs(options.limiters.files.types) do
-                if ft == vim.bo.filetype then
-                    whitelisted = true
-                end
-            end
-            if not whitelisted then
-                return
-            end
-        else
-            -- File types are blacklisted
-            for _, ft in pairs(options.limiters.files.types) do
-                if ft == vim.bo.filetype then
-                    return
-                end
-            end
+        if not within_filetype_limits() then
+            return
         end
     end
 
@@ -130,18 +139,18 @@ function M.update(force)
 
     if options.style.kind == 'advanced' then
         -- Append comma clauses first to prevent range update from spanning skipped years
-        append_comma_clause()
-        update_range_clause()
+        append_comma_clause(opts.range, opts.post_pat)
+        update_range_clause(opts.range, opts.post_pat)
         if options.style.advanced.force then
-            update_comma_clauses()
+            update_comma_clauses(opts.range, opts.post_pat)
         end
     elseif options.style.kind == 'simple' then
         if options.style.simple.force then
             -- Collapse advanced copyright lines to simple ones
-            collapse_to_range_clause()
+            collapse_to_range_clause(opts.range, opts.post_pat)
         else
             -- Update only simple lines
-            update_range_clause()
+            update_range_clause(opts.range, opts.post_pat)
         end
     else
         vim.api.nvim_err_writeln('copyright-updater.nvim unknown option value for style.kind')
@@ -202,8 +211,28 @@ local function verify_options()
     end
 end
 
-function M.setup(opts)
-    options = vim.tbl_deep_extend('force', options, opts or {})
+local function user_cmd_UpdateCopyright(opts)
+    local update_args = {force = opts.bang}
+
+    if opts.args ~= "" then
+        update_args.post_pat = opts.args
+    elseif opts.bang then
+        update_args.post_pat = ''
+    end
+
+    if opts.range == 2 then
+        update_args.range = opts.line1 .. ',' .. opts.line2
+    elseif opts.range == 1 then
+        update_args.range = opts.line1
+    elseif opts.bang then
+        update_args.range = '%'
+    end
+
+    M.update(update_args)
+end
+
+function M.setup(config)
+    options = vim.tbl_deep_extend('force', options, config or {})
 
     verify_options()
 
@@ -223,7 +252,7 @@ function M.setup(opts)
         vim.api.nvim_set_keymap('n', options.mappings.disable, '<cmd>lua require("copyright-updater").disable()<CR>', {noremap=true, silent=true, desc='Disable Copyright Updater'})
     end
     if options.mappings.update ~= '' and options.mappings.update ~= nil then
-        vim.api.nvim_set_keymap('n', options.mappings.update, '<cmd>lua require("copyright-updater").update(true)<CR>', {noremap=true, silent=true, desc='Update Copyrights'})
+        vim.api.nvim_set_keymap('n', options.mappings.update, '<cmd>lua require("copyright-updater").update()<CR>', {noremap=true, silent=true, desc='Update Copyrights'})
     end
 
     vim.api.nvim_create_augroup("copyright_updater", { clear = true })
@@ -234,7 +263,11 @@ function M.setup(opts)
         callback = function() M.update() end
     })
 
-    vim.api.nvim_create_user_command('UpdateCopyright', function() M.update(true) end, {})
+    vim.api.nvim_create_user_command(
+        'UpdateCopyright',
+        function(opts) user_cmd_UpdateCopyright(opts) end,
+        {bang=true,range=true,nargs='?'}
+    )
 end
 
 return M

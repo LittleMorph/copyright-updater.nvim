@@ -47,7 +47,7 @@ Full default configuration:
             toggle = '<leader>C',  -- Toggle the plugin on/off
             enable = nil,  -- Enable the plugin globally
             disable = nil, -- Disable the plugin globally
-            update = nil   -- Force update current buffer
+            update = nil   -- Update current buffer
         },
         limiters = {
             range = '%', -- Only update copyright statements in this range
@@ -121,8 +121,9 @@ mappings.disable    Type: `string` (default: `nil`)
 
                                            *copyright-updater-mappings.update*
 mappings.update     Type: `string` (default: `nil`)
-                    Key mapping to force update the current buffer. Has the
-                    same effect as calling |:UpdateCopyright|.
+                    Key mapping to update the current buffer. Has the same
+                    effect as calling |:UpdateCopyright| without the bang
+                    modifier (`!`). Will respect all configured file limiters.
 
 
                                             *copyright-updater-limiters.range*
@@ -190,9 +191,28 @@ and the years.
 COMMANDS                                          *copyright-updater-commands*
 
                                                             *:UpdateCopyright*
-Update copyright statements in the current buffer, ignoring the configured
-filetypes list.
 
+Update copyright statements in the current buffer.
+
+If `:UpdateCopyright` is called with a range, it will use the specified range
+and ignore the configured range limiter (`limiters.range`).
+
+If called with anything following the command, it is taken to be a post
+pattern, overriding the configured post pattern limiter
+(`limiters.post_pattern`).
+
+If called with the bang modifier (`:UpdateCopyright!`) any configured limiters
+are ignored. E.g. to force update an entire buffer ignoring all limiters, use:
+>
+    :UpdateCopyright!
+<
+The specified range and/or post pattern will be respected if used together
+with the bang modifier. E.g. to update any copyright statements on the first
+three lines of the buffer, with the post pattern "New Org Inc.", ignoring all
+other limiters, use:
+>
+    :1,3UpdateCoyright! New Org Inc.
+<
 ==============================================================================
 FUNCTIONS                                        *copyright-updater-functions*
 

@@ -44,6 +44,26 @@ use {
 }
 ```
 
+### Triggering an update
+
+There are three ways to trigger an update.
+
+1. Write the buffer - will trigger the auto command
+1. Use the mapping bound to `mappings.update`
+1. Use the Ex command `:UpdateCopyright`
+
+Using the Ex command allows overriding the configured limiters.
+To override the range limiter just specify a range.
+To override the post pattern, append the new pattern after the Ex command.
+To override all other limiters, use the bang modifier -
+Note that the configured range and post pattern is ignored when using the bang modifer,
+but a range and/or post pattern specified as part of the Ex command is respected.
+E.g. to update the entire buffer ignoring all configured limiters, use:
+
+```
+:%UpdateCopyright!
+```
+
 ## Configuration
 
 Configuration can be passed to the setup function.
@@ -74,7 +94,7 @@ require('copyright-updater').setup {
         toggle = '<leader>C',  -- Toggle the plugin on/off
         enable = nil,  -- Enable the plugin globally
         disable = nil, -- Disable the plugin globally
-        update = nil   -- Force update current buffer
+        update = nil   -- Update current buffer
     },
     limiters = {
         range = '%', -- Only update copyright statements in this range
