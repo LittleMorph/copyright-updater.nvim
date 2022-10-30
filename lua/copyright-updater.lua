@@ -39,7 +39,7 @@ local options = {
 local function append_comma_clause(range, post_pat)
     local space = options.style.advanced.space_after_comma and ' ' or ''
 
-    vim.api.nvim_exec(range .. 's:' ..
+    vim.api.nvim_exec(range .. 's:\\m' ..
         '\\cCOPYRIGHT\\s*\\%((c)\\|©\\|&copy;\\)\\?\\s*' ..
         '\\%([0-9]\\{4}\\(-[0-9]\\{4\\}\\)\\?,\\s*\\)*' ..
         '\\zs' ..
@@ -60,18 +60,18 @@ end
 local function update_comma_clauses(range, post_pat)
     local space = options.style.advanced.space_after_comma and ' ' or ''
 
-    vim.api.nvim_exec(range .. 'g:' ..
+    vim.api.nvim_exec(range .. 'g:\\m' ..
         '\\cCOPYRIGHT\\s*\\%((c)\\|©\\|&copy;\\)\\?\\s*' ..
         '.*' ..
         post_pat .. '$' ..
-        ':s:' ..
+        ':s:\\m' ..
         '\\([0-9]\\{4\\}\\)\\s*,\\s*:' ..
         '\\1,' .. space .. ':g',
         false)
 end
 
 local function update_range_clause(range, post_pat)
-    vim.api.nvim_exec(range .. 's:' ..
+    vim.api.nvim_exec(range .. 's:\\m' ..
         '\\cCOPYRIGHT\\s*\\%((c)\\|©\\|&copy;\\)\\?\\s*' ..
         '\\%([0-9]\\{4}\\%(-[0-9]\\{4\\}\\)\\?,\\s*\\)*' ..
         '\\zs' ..
@@ -85,7 +85,7 @@ local function update_range_clause(range, post_pat)
 end
 
 local function collapse_to_range_clause(range, post_pat)
-    vim.api.nvim_exec(range .. 's:' ..
+    vim.api.nvim_exec(range .. 's:\\m' ..
         '\\cCOPYRIGHT\\s*\\%((c)\\|©\\|&copy;\\)\\?\\s*' ..
         '\\zs' ..
         '\\%(' .. os.date("%Y") .. '\\)\\@!\\([0-9]\\{4}\\)\\%(\\s*[,-]\\?\\s*\\%([0-9]\\{4\\}\\)\\)*' ..

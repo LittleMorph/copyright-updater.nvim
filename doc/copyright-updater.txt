@@ -143,13 +143,16 @@ limiters.post_pattern
 >
                         \\%(Corp A/S\\|New Org Inc\\)
 <
-                    Note that backslash characters must be escaped with
-                    another backslash. See |pattern.txt| for more info on
-                    supported regex.
+                    Regexes are "magic" and case-insensitive by default,
+                    regardless of 'magic' and 'ignorecase'.
 
-                    Note too that the pattern is applied at the end of the
-                    copyright line, so if further characters are expected,
-                    append a `.*` at the end.
+                    Backslash characters must be escaped with another
+                    backslash. See |pattern.txt| for more info on supported
+                    regex.
+
+                    The pattern is applied at the end of the copyright line,
+                    so if further characters are expected, append a `.*` at
+                    the end.
 
 
                                       *copyright-updater-limiters.files.types*
