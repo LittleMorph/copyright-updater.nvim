@@ -193,10 +193,10 @@ local function verify_options()
 
     -- mappings
     assert(type(options.mappings) == "table", "Option 'mappings' must be a table")
-    assert(type(options.mappings.toggle) == "string" or type(options.mappings.update) == "nil", "Option 'mappings.toggle' must be a string or nil")
+    assert(type(options.mappings.toggle) == "string" or type(options.mappings.toggle) == "nil", "Option 'mappings.toggle' must be a string or nil")
     assert(type(options.mappings.update) == "string" or type(options.mappings.update) == "nil", "Option 'mappings.update' must be a string or nil")
-    assert(type(options.mappings.enable) == "string" or type(options.mappings.update) == "nil", "Option 'mappings.enable' must be a string or nil")
-    assert(type(options.mappings.disable) == "string" or type(options.mappings.update) == "nil", "Option 'mappings.disable' must be a string or nil")
+    assert(type(options.mappings.enable) == "string" or type(options.mappings.enable) == "nil", "Option 'mappings.enable' must be a string or nil")
+    assert(type(options.mappings.disable) == "string" or type(options.mappings.disable) == "nil", "Option 'mappings.disable' must be a string or nil")
 
     -- limiters
     assert(type(options.limiters) == "table", "Option 'limiters' must be a table")
