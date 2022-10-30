@@ -75,8 +75,8 @@ require('copyright-updater').setup {
     enabled = true,
     -- Print status when enabling, disabling, or toggling the plugin
     silent = false,
-    -- Advanced style allows multiple ranges separated by comma
-    -- Simple (non-advanced) style only use a single range
+    -- Return cursor to current line after update
+    return_cursor = false,
     style = {
         -- Advanced style allows multiple ranges separated by comma
         -- Simple style use only a single range

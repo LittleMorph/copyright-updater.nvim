@@ -10,6 +10,7 @@ end
 local options = {
     enabled = true,
     silent = false,
+    return_cursor = false,
     style = {
         kind = 'advanced', -- advanced | simple
         advanced = {
@@ -166,6 +167,9 @@ function M.update(opts)
     local report = vim.api.nvim_get_option('report')
     if options.silent then vim.opt.report = 10000 end -- disable reporting
 
+    -- save cursor position
+    local position = vim.fn.winsaveview()
+
     if options.style.kind == 'advanced' then
         -- Append comma clauses first to prevent range update from spanning skipped years
         append_comma_clause(opts.range, opts.post_pat)
@@ -184,6 +188,9 @@ function M.update(opts)
     else
         vim.api.nvim_err_writeln('copyright-updater.nvim unknown option value for style.kind')
     end
+
+    -- Restore cursor position
+    if options.return_cursor then vim.fn.winrestview(position) end
 
     if options.silent then vim.opt.report = report end -- restore reporting
 end

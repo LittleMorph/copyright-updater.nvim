@@ -30,6 +30,8 @@ Full default configuration:
         enabled = true,
         -- Print status when enabling, disabling, or toggling the plugin
         silent = false,
+        -- Return cursor to current line after update
+        return_cursor = false,
         style = {
             -- Advanced style allows multiple ranges separated by comma
             -- Simple style use only a single range
@@ -78,6 +80,12 @@ enabled             Type: `boolean` (default: `true`)
 silent              Type: `boolean` (default: `false`)
                     Whether the plugin should report when it is enabled and
                     disabled in the command line.
+
+
+                                             *copyright-updater-return_cursor*
+return_cursor       Type: `boolean` (default: `false`)
+                    Whether the cursor should be returned to the current
+                    position in the buffer after a copyright update.
 
 
                                                 *copyright-updater-style.kind*
