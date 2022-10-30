@@ -58,6 +58,7 @@ local function append_comma_clause(range, post_pat)
         post_pat .. '$:' ..
         '&,' .. space .. os.date("%Y") .. ':e',
         false)
+    vim.fn.histdel('/', -1)
 end
 
 local function update_comma_clauses(range, post_pat)
@@ -71,6 +72,7 @@ local function update_comma_clauses(range, post_pat)
         '\\([0-9]\\{4\\}\\)\\s*,\\s*:' ..
         '\\1,' .. space .. ':g',
         false)
+    vim.fn.histdel('/', -1)
 end
 
 local function update_range_clause(range, post_pat)
@@ -85,6 +87,7 @@ local function update_range_clause(range, post_pat)
         post_pat .. '$:' ..
         '\\1-' .. os.date("%Y") .. ':e',
         false)
+    vim.fn.histdel('/', -1)
 end
 
 local function collapse_to_range_clause(range, post_pat)
@@ -97,6 +100,7 @@ local function collapse_to_range_clause(range, post_pat)
         post_pat .. '$:' ..
         '\\1-' .. os.date("%Y") .. ':e',
         false)
+    vim.fn.histdel('/', -1)
 end
 
 local function within_filetype_limits()
