@@ -114,7 +114,7 @@ require('copyright-updater').setup {
 }
 ```
 
-See `:help copyright-updater` once the plugin is installed for more details.
+See `:help copyright-updater` once the plugin is installed for more details, or read it [here](doc/copyright-updater.txt).
 
 ## Examples
 
@@ -204,4 +204,4 @@ After update:
 
 ## Found a bug?
 
-Please open an issue with a minimal config and buffer content to reproduce the issue.
+Please open an issue with a minimal config and buffer content to reproduce the bug.
