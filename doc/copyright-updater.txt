@@ -145,6 +145,15 @@ limiters.range      Type: `string` (default: `%`)
                     Only copyright statements found within the set range will
                     be updated. Defaults to the entire file.
 
+                    Line numbers are verified to be withing the buffer, any
+                    other range specifier is taken as is, and results in an
+                    error if the range includes lines outside the buffer. This
+                    verification expects the range to be in order (See |E493|).
+
+                    Example with `range = 5,15`:
+                    In a buffer with 10 lines, the range is adjusted to `5,10`.
+                    In a buffer with 4 lines, the update is skipped entirely.
+
 
                                      *copyright-updater-limiters.post_pattern*
 limiters.post_pattern

@@ -37,6 +37,33 @@ describe("copyright_updater", function()
                 "# Copyright 2018-" .. os.date("%Y") - 1 .. " Corp A/S",
                 "# Copyright 2018-" .. os.date("%Y") - 1 .. " Corp A/S"
             }
+        },{
+            range = '1,8', -- range outside buffer
+            result = {
+                "# Copyright 2018-" .. os.date("%Y") .. " Corp A/S",
+                "# Copyright 2018-" .. os.date("%Y") .. " Corp A/S",
+                "# Copyright 2018-" .. os.date("%Y") .. " Corp A/S",
+                "# Copyright 2018-" .. os.date("%Y") .. " Corp A/S",
+                "# Copyright 2018-" .. os.date("%Y") .. " Corp A/S"
+            }
+        },{
+            range = '.,8', -- range outside buffer
+            result = {
+                "# Copyright 2018-" .. os.date("%Y") .. " Corp A/S",
+                "# Copyright 2018-" .. os.date("%Y") .. " Corp A/S",
+                "# Copyright 2018-" .. os.date("%Y") .. " Corp A/S",
+                "# Copyright 2018-" .. os.date("%Y") .. " Corp A/S",
+                "# Copyright 2018-" .. os.date("%Y") .. " Corp A/S"
+            }
+        },{
+            range = '7,9', -- range outside buffer
+            result = {
+                "# Copyright 2018-" .. os.date("%Y") - 1 .. " Corp A/S",
+                "# Copyright 2018-" .. os.date("%Y") - 1 .. " Corp A/S",
+                "# Copyright 2018-" .. os.date("%Y") - 1 .. " Corp A/S",
+                "# Copyright 2018-" .. os.date("%Y") - 1 .. " Corp A/S",
+                "# Copyright 2018-" .. os.date("%Y") - 1 .. " Corp A/S"
+            }
         }
     } do
         for _, config in ipairs {

@@ -150,11 +150,47 @@ local function within_filename_limits()
     return true
 end
 
+local function adjust_range(range)
+    -- Attempt to adjust "out of buffer" range specifications
+    -- This allows using e.g. 1,15 in the configuration without having the
+    -- auto command throw an error on buffers with less than 15 lines
+    -- Assumes the range specification is not in reverse order
+
+    local last_buf_line_number = vim.api.nvim_buf_line_count(0)
+    local first, sep, last
+
+    -- First line in range (or entire range) is a line number
+    first, sep, last = string.match(range, '^([0-9]+)([,;])(.*)$')
+    if (first and sep) or (first and not sep and not last) then
+        if first+0 > last_buf_line_number then
+            return nil
+        end
+    end
+
+    -- Second line in range is a line number
+    first, sep, last = string.match(range, '^(.+)([,;])([0-9]+)$')
+    if first and sep and last then
+        if last+0 > last_buf_line_number then
+            -- Assume the first line is in the buffer
+            return first .. sep .. last_buf_line_number
+        end
+    end
+
+    -- Just return the original range
+    return range
+end
+
 function M.update(opts)
     opts = opts or {}
     opts.force = opts.force or false
-    opts.range = opts.range or options.limiters.range
     opts.post_pat = opts.post_pat or options.limiters.post_pattern
+
+    -- Verify configured range line numbers are withing the buffer
+    local range = adjust_range(options.limiters.range)
+    if not range then
+        return
+    end
+    opts.range = opts.range or range
 
     if not vim.bo.modifiable then
         vim.api.nvim_err_writeln('copyright-updater.nvim buffer is not modifiable')
