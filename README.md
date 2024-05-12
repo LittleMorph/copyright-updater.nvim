@@ -20,6 +20,16 @@ See the [Configuration](#configuration) section for details.
 
 Install using your favorite plugin manager
 
+### [lazy](https://github.com/folke/lazy.nvim)
+
+```lua
+{
+    'LittleMorph/copyright-updater.nvim',
+    event: 'BufModifiedSet', -- Delay loading until a buffer is modified
+    opts = {}
+}
+```
+
 ### [packer.nvim](https://github.com/wbthomason/packer.nvim)
 
 ```lua
