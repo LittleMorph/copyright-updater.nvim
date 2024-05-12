@@ -297,11 +297,18 @@ FUNCTIONS                                        *copyright-updater-functions*
 Four functions are exposed for integration with other scripts or plugins.
 
 
-update({force})                                   *copyright-updater.update()*
+update({force}, {post_pat}, {range})              *copyright-updater.update()*
     Update copyrights in the current buffer.
 
     Parameters: ~
-        {force}     (`boolean`) Whether to ignore the configured file list.
+        {force}     (`boolean`) Optional - defaults to `false`
+                    Whether to ignore the configured file type and file name
+                    list.
+        {post_pat}  (`string` | `nil`) Optional - defaults to `nil`
+                    The post pattern to apply. Use the pattern from config if
+                    `nil`. Use an empty string to ignore the pattern from config.
+        {range}     (`range` | `nil`) Optional - defaults to `nil`
+                    The range to operate on. Uses the range from config if `nil`.
 
 
 enable()                                          *copyright-updater.enable()*

@@ -180,17 +180,17 @@ local function adjust_range(range)
     return range
 end
 
-function M.update(opts)
-    opts = opts or {}
-    opts.force = opts.force or false
-    opts.post_pat = opts.post_pat or options.limiters.post_pattern
+function M.update(force, post_pat, range)
+    local opts = {}
+    opts.force = force or false
+    opts.post_pat = post_pat or options.limiters.post_pattern
+    opts.range = range or options.limiters.range
 
-    -- Verify configured range line numbers are withing the buffer
-    local range = adjust_range(options.limiters.range)
-    if not range then
+    -- Verify configured range is within the buffer
+    opts.range = adjust_range(opts.range)
+    if not opts.range then
         return
     end
-    opts.range = opts.range or range
 
     if not vim.bo.modifiable then
         vim.api.nvim_err_writeln('copyright-updater.nvim buffer is not modifiable')
@@ -298,23 +298,24 @@ local function verify_options()
 end
 
 local function user_cmd_UpdateCopyright(opts)
-    local update_args = {force = opts.bang}
+    local post_pat = nil
+    local range = nil
 
     if opts.args ~= "" then
-        update_args.post_pat = opts.args
+        post_pat = opts.args
     elseif opts.bang then
-        update_args.post_pat = ''
+        post_pat = ''
     end
 
     if opts.range == 2 then
-        update_args.range = opts.line1 .. ',' .. opts.line2
+        range = opts.line1 .. ',' .. opts.line2
     elseif opts.range == 1 then
-        update_args.range = opts.line1
+        range = opts.line1
     elseif opts.bang then
-        update_args.range = '%'
+        range = '%'
     end
 
-    M.update(update_args)
+    M.update(opts.bang, post_pat, range)
 end
 
 function M.setup(config)
