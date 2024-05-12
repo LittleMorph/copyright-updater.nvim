@@ -4,7 +4,12 @@ A [Neovim](https://neovim.io) plugin to automatically update copyright messages 
 
 Inspired by [Vim Tip 1521](https://vim.fandom.com/wiki/Automatically_Update_Copyright_Notice_in_Files) by user Fritzophrenic.
 
-Updates any line that matches (case insensitively) this simplified regex: `copyright ((c)|©|&copy;)? [0-9]{4}([-,][0-9]{4}`.
+In the default configuration the plugin updates any line containing the word copyright followed by at least one year when the buffer is written.
+Common copyright symbols like `©`, `(c)` and `&copy;` can optionally be between the copyright word and the year specification.
+
+The plugin supports different copyright styles, formats and update strategies.
+It is also possible to apply limiters like file type, file name, buffer range and post match patterns (E.g. to only update copyright statements that contain a certain company name).
+See the [Configuration](#configuration) section for details.
 
 ## Requirements
 
@@ -13,14 +18,21 @@ Updates any line that matches (case insensitively) this simplified regex: `copyr
 
 ## Installation
 
-Using [packer.nvim](https://github.com/wbthomason/packer.nvim):
+Install using your favorite plugin manager
+
+### [packer.nvim](https://github.com/wbthomason/packer.nvim)
+
 ```lua
 use {
-    'LittleMorph/copyright-updater.nvim'
+    'LittleMorph/copyright-updater.nvim',
+    config = function()
+        require('copyright-updater').setup()
+    end
 }
 ```
 
-Using [vim-plug](https://github.com/junegunn/vim-plug):
+### [vim-plug](https://github.com/junegunn/vim-plug)
+
 ```lua
 Plug 'LittleMorph/copyright-updater.nvim'
 ```
@@ -31,17 +43,6 @@ For basic usage with default configuration:
 
 ```lua
 require('copyright-updater').setup()
-```
-
-or directly using [packer.nvim]:
-
-```lua
-use {
-    'LittleMorph/copyright-updater.nvim'
-    config = function()
-        require('copyright-updater').setup()
-    end
-}
 ```
 
 ### Triggering an update
@@ -58,7 +59,7 @@ To override the post pattern, append the new pattern after the Ex command.
 To override all other limiters, use the bang modifier -
 Note that the configured range and post pattern is ignored when using the bang modifer,
 but a range and/or post pattern specified as part of the Ex command is respected.
-E.g. to update the entire buffer ignoring all configured limiters, use:
+E.g. to update the entire buffer ignoring all configured limiters and the post pattern, use:
 
 ```
 :%UpdateCopyright!
@@ -116,7 +117,7 @@ require('copyright-updater').setup {
 
 See `:help copyright-updater` once the plugin is installed for more details, or read it [here](doc/copyright-updater.txt).
 
-## Examples
+## Style examples
 
 All examples assume the current year is 2022.
 
