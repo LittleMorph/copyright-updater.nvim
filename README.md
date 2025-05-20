@@ -16,6 +16,8 @@ See the [Configuration](#configuration) section for details.
 - Neovim >= 0.11.0
 - [plenary.nvim](https://github.com/nvim-lua/plenary.nvim) (for running tests)
 
+For older versions of Neovim, use the tag `neovim-below-0.11.0`.
+
 ## Installation
 
 Install using your favorite plugin manager

@@ -3,7 +3,7 @@ local M = {}
 local assert = require "luassert"
 
 if vim.fn.has('nvim-0.11') == 0 then
-    vim.api.nvim_echo({{'copyright-updater.nvim requires Neovim version 0.11 or above'}}, true, {err=true})
+    vim.api.nvim_err_writeln('copyright-updater.nvim requires Neovim version 0.11 or above')
     return
 end
 
