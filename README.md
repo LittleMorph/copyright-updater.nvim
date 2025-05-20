@@ -13,7 +13,7 @@ See the [Configuration](#configuration) section for details.
 
 ## Requirements
 
-- Neovim >= 0.7.0
+- Neovim >= 0.11.0
 - [plenary.nvim](https://github.com/nvim-lua/plenary.nvim) (for running tests)
 
 ## Installation

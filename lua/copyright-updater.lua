@@ -2,8 +2,8 @@ local M = {}
 
 local assert = require "luassert"
 
-if vim.fn.has('nvim-0.7') == 0 then
-    vim.api.nvim_echo({'copyright-updater.nvim requires Neovim version 0.7 or above\n'}, true, {err=true})
+if vim.fn.has('nvim-0.11') == 0 then
+    vim.api.nvim_echo({{'copyright-updater.nvim requires Neovim version 0.11 or above'}}, true, {err=true})
     return
 end
 
@@ -193,7 +193,7 @@ function M.update(force, post_pat, range)
     end
 
     if not vim.bo.modifiable then
-        vim.api.nvim_echo({'copyright-updater.nvim buffer is not modifiable'}, true, {err=true})
+        vim.api.nvim_echo({{'copyright-updater.nvim buffer is not modifiable'}}, true, {err=true})
         return
     end
 
@@ -231,7 +231,7 @@ function M.update(force, post_pat, range)
             update_range_clause(opts.range, opts.post_pat)
         end
     else
-        vim.api.nvim_echo({'copyright-updater.nvim unknown option value for style.kind'}, true, {err=true})
+        vim.api.nvim_echo({{'copyright-updater.nvim unknown option value for style.kind'}}, true, {err=true})
     end
 
     -- Restore cursor position
@@ -242,12 +242,12 @@ end
 
 function M.enable()
     options.enabled = true
-    if not options.silent then vim.api.nvim_echo({'Copyright Updater Enabled\n'}, true, {err=true}) end
+    if not options.silent then vim.api.nvim_echo({{'Copyright Updater Enabled'}}, true, {err=true}) end
 end
 
 function M.disable()
     options.enabled = false
-    if not options.silent then vim.api.nvim_echo({'Copyright Updater Disabled\n'}, true, {err=true}) end
+    if not options.silent then vim.api.nvim_echo({{'Copyright Updater Disabled'}}, true, {err=true}) end
 end
 
 function M.toggle()
