@@ -3,7 +3,7 @@ local M = {}
 local assert = require "luassert"
 
 if vim.fn.has('nvim-0.7') == 0 then
-    vim.api.nvim_err_writeln('copyright-updater.nvim requires Neovim version 0.7 or above')
+    vim.api.nvim_echo({'copyright-updater.nvim requires Neovim version 0.7 or above\n'}, true, {err=true})
     return
 end
 
@@ -42,7 +42,7 @@ local options = {
 local function append_comma_clause(range, post_pat)
     local space = options.style.advanced.space_after_comma and ' ' or ''
 
-    vim.api.nvim_exec(range .. 's:\\m' ..
+    vim.api.nvim_exec2(range .. 's:\\m' ..
         '\\cCOPYRIGHT\\s*\\%((c)\\|©\\|&copy;\\)\\?\\s*' ..
         '\\%([0-9]\\{4}\\(-[0-9]\\{4\\}\\)\\?,\\s*\\)*' ..
         '\\zs' ..
@@ -57,26 +57,26 @@ local function append_comma_clause(range, post_pat)
         '\\%(\\%([0-9]\\{4\\}\\)\\@!.\\)*' ..
         post_pat .. '$:' ..
         '&,' .. space .. os.date("%Y") .. ':e',
-        false)
+        {output=false})
     vim.fn.histdel('/', -1)
 end
 
 local function update_comma_clauses(range, post_pat)
     local space = options.style.advanced.space_after_comma and ' ' or ''
 
-    vim.api.nvim_exec(range .. 'g:\\m' ..
+    vim.api.nvim_exec2(range .. 'g:\\m' ..
         '\\cCOPYRIGHT\\s*\\%((c)\\|©\\|&copy;\\)\\?\\s*' ..
         '.*' ..
         post_pat .. '$' ..
         ':s:\\m' ..
         '\\([0-9]\\{4\\}\\)\\s*,\\s*:' ..
         '\\1,' .. space .. ':g',
-        false)
+        {output=false})
     vim.fn.histdel('/', -1)
 end
 
 local function update_range_clause(range, post_pat)
-    vim.api.nvim_exec(range .. 's:\\m' ..
+    vim.api.nvim_exec2(range .. 's:\\m' ..
         '\\cCOPYRIGHT\\s*\\%((c)\\|©\\|&copy;\\)\\?\\s*' ..
         '\\%([0-9]\\{4}\\%(-[0-9]\\{4\\}\\)\\?,\\s*\\)*' ..
         '\\zs' ..
@@ -86,12 +86,12 @@ local function update_range_clause(range, post_pat)
         '\\%(\\%([0-9]\\{4\\}\\)\\@!.\\)*' ..
         post_pat .. '$:' ..
         '\\1-' .. os.date("%Y") .. ':e',
-        false)
+        {output=false})
     vim.fn.histdel('/', -1)
 end
 
 local function collapse_to_range_clause(range, post_pat)
-    vim.api.nvim_exec(range .. 's:\\m' ..
+    vim.api.nvim_exec2(range .. 's:\\m' ..
         '\\cCOPYRIGHT\\s*\\%((c)\\|©\\|&copy;\\)\\?\\s*' ..
         '\\zs' ..
         '\\%(' .. os.date("%Y") .. '\\)\\@!\\([0-9]\\{4}\\)\\%(\\s*[,-]\\?\\s*\\%([0-9]\\{4\\}\\)\\)*' ..
@@ -99,7 +99,7 @@ local function collapse_to_range_clause(range, post_pat)
         '\\%(\\%([0-9]\\{4\\}\\)\\@!.\\)*' ..
         post_pat .. '$:' ..
         '\\1-' .. os.date("%Y") .. ':e',
-        false)
+        {output=false})
     vim.fn.histdel('/', -1)
 end
 
@@ -193,7 +193,7 @@ function M.update(force, post_pat, range)
     end
 
     if not vim.bo.modifiable then
-        vim.api.nvim_err_writeln('copyright-updater.nvim buffer is not modifiable')
+        vim.api.nvim_echo({'copyright-updater.nvim buffer is not modifiable'}, true, {err=true})
         return
     end
 
@@ -209,7 +209,7 @@ function M.update(force, post_pat, range)
         end
     end
 
-    local report = vim.api.nvim_get_option('report')
+    local report = vim.api.nvim_get_option_value('report', {})
     if options.silent then vim.opt.report = 10000 end -- disable reporting
 
     -- save cursor position
@@ -231,7 +231,7 @@ function M.update(force, post_pat, range)
             update_range_clause(opts.range, opts.post_pat)
         end
     else
-        vim.api.nvim_err_writeln('copyright-updater.nvim unknown option value for style.kind')
+        vim.api.nvim_echo({'copyright-updater.nvim unknown option value for style.kind'}, true, {err=true})
     end
 
     -- Restore cursor position
@@ -242,12 +242,12 @@ end
 
 function M.enable()
     options.enabled = true
-    if not options.silent then vim.api.nvim_out_write('Copyright Updater Enabled\n') end
+    if not options.silent then vim.api.nvim_echo({'Copyright Updater Enabled\n'}, true, {err=true}) end
 end
 
 function M.disable()
     options.enabled = false
-    if not options.silent then vim.api.nvim_out_write('Copyright Updater Disabled\n') end
+    if not options.silent then vim.api.nvim_echo({'Copyright Updater Disabled\n'}, true, {err=true}) end
 end
 
 function M.toggle()
