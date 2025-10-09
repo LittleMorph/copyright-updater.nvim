@@ -11,6 +11,11 @@ The plugin supports different copyright styles, formats and update strategies.
 It is also possible to apply limiters like file type, file name, buffer range and post match patterns (E.g. to only update copyright statements that contain a certain company name).
 See the [Configuration](#configuration) section for details.
 
+The main repository is on [codeberg](https://codeberg.org/LittleMorph/copyright-updater.nvim),
+which is where the issue tracker can be found and where contributions are accepted.
+
+A read-only mirror is available on [github](https://github.com/LittleMorph/copyright-updater.nvim).
+
 ## Requirements
 
 - Neovim >= 0.11.0
