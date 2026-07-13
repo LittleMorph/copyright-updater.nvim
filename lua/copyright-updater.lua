@@ -1,9 +1,9 @@
 local M = {}
 
-local assert = require "luassert"
+local assert = require 'luassert'
 
-if vim.fn.has('nvim-0.11') == 0 then
-    vim.api.nvim_err_writeln('copyright-updater.nvim requires Neovim version 0.11 or above')
+if vim.fn.has 'nvim-0.11' == 0 then
+    vim.api.nvim_err_writeln 'copyright-updater.nvim requires Neovim version 0.11 or above'
     return
 end
 
@@ -15,17 +15,17 @@ local options = {
         kind = 'advanced', -- advanced | simple
         advanced = {
             space_after_comma = false,
-            force = false -- Apply the space_after_comma setting to existing commas
+            force = false, -- Apply the space_after_comma setting to existing commas
         },
         simple = {
-            force = false -- Allow removing existing info
-        }
+            force = false, -- Allow removing existing info
+        },
     },
     mappings = {
         toggle = '<leader>C',
         enable = nil,
         disable = nil,
-        update = nil
+        update = nil,
     },
     limiters = {
         range = '%', -- substitution range
@@ -34,72 +34,109 @@ local options = {
             type_whitelist = false,
             types = {},
             name_whitelist = false,
-            names = {}
-        }
-    }
+            names = {},
+        },
+    },
 }
 
 local function append_comma_clause(range, post_pat)
     local space = options.style.advanced.space_after_comma and ' ' or ''
 
-    vim.api.nvim_exec2(range .. 's:\\m' ..
-        '\\cCOPYRIGHT\\s*\\%((c)\\|©\\|&copy;\\)\\?\\s*' ..
-        '\\%([0-9]\\{4}\\(-[0-9]\\{4\\}\\)\\?,\\s*\\)*' ..
-        '\\zs' ..
-        '\\(' ..
-        '\\%(' .. os.date("%Y") .. '\\)\\@![0-9]\\{4\\}' ..
-        '\\%(-' .. os.date("%Y") .. '\\)\\@!\\%(-[0-9]\\{4\\}\\)\\?' ..
-        '\\&' ..
-        '\\%([0-9]\\{4\\}-\\)\\?' ..
-        '\\%(' .. (os.date("%Y") - 1) .. '\\)\\@!\\%([0-9]\\)\\{4\\}' ..
-        '\\)' ..
-        '\\ze' ..
-        '\\%(\\%([0-9]\\{4\\}\\)\\@!.\\)*' ..
-        post_pat .. '$:' ..
-        '&,' .. space .. os.date("%Y") .. ':e',
-        {output=false})
+    vim.api.nvim_exec2(
+        range
+            .. 's:\\m'
+            .. '\\cCOPYRIGHT\\s*\\%((c)\\|©\\|&copy;\\)\\?\\s*'
+            .. '\\%([0-9]\\{4}\\(-[0-9]\\{4\\}\\)\\?,\\s*\\)*'
+            .. '\\zs'
+            .. '\\('
+            .. '\\%('
+            .. os.date '%Y'
+            .. '\\)\\@![0-9]\\{4\\}'
+            .. '\\%(-'
+            .. os.date '%Y'
+            .. '\\)\\@!\\%(-[0-9]\\{4\\}\\)\\?'
+            .. '\\&'
+            .. '\\%([0-9]\\{4\\}-\\)\\?'
+            .. '\\%('
+            .. (os.date '%Y' - 1)
+            .. '\\)\\@!\\%([0-9]\\)\\{4\\}'
+            .. '\\)'
+            .. '\\ze'
+            .. '\\%(\\%([0-9]\\{4\\}\\)\\@!.\\)*'
+            .. post_pat
+            .. '$:'
+            .. '&,'
+            .. space
+            .. os.date '%Y'
+            .. ':e',
+        { output = false }
+    )
     vim.fn.histdel('/', -1)
 end
 
 local function update_comma_clauses(range, post_pat)
     local space = options.style.advanced.space_after_comma and ' ' or ''
 
-    vim.api.nvim_exec2(range .. 'g:\\m' ..
-        '\\cCOPYRIGHT\\s*\\%((c)\\|©\\|&copy;\\)\\?\\s*' ..
-        '.*' ..
-        post_pat .. '$' ..
-        ':s:\\m' ..
-        '\\([0-9]\\{4\\}\\)\\s*,\\s*:' ..
-        '\\1,' .. space .. ':g',
-        {output=false})
+    vim.api.nvim_exec2(
+        range
+            .. 'g:\\m'
+            .. '\\cCOPYRIGHT\\s*\\%((c)\\|©\\|&copy;\\)\\?\\s*'
+            .. '.*'
+            .. post_pat
+            .. '$'
+            .. ':s:\\m'
+            .. '\\([0-9]\\{4\\}\\)\\s*,\\s*:'
+            .. '\\1,'
+            .. space
+            .. ':g',
+        { output = false }
+    )
     vim.fn.histdel('/', -1)
 end
 
 local function update_range_clause(range, post_pat)
-    vim.api.nvim_exec2(range .. 's:\\m' ..
-        '\\cCOPYRIGHT\\s*\\%((c)\\|©\\|&copy;\\)\\?\\s*' ..
-        '\\%([0-9]\\{4}\\%(-[0-9]\\{4\\}\\)\\?,\\s*\\)*' ..
-        '\\zs' ..
-        '\\%(' .. os.date("%Y") .. '\\)\\@!\\([0-9]\\{4\\}\\)' ..
-        '\\%(-' .. os.date("%Y") .. '\\)\\@!\\%(-[0-9]\\{4\\}\\)\\?' ..
-        '\\ze' ..
-        '\\%(\\%([0-9]\\{4\\}\\)\\@!.\\)*' ..
-        post_pat .. '$:' ..
-        '\\1-' .. os.date("%Y") .. ':e',
-        {output=false})
+    vim.api.nvim_exec2(
+        range
+            .. 's:\\m'
+            .. '\\cCOPYRIGHT\\s*\\%((c)\\|©\\|&copy;\\)\\?\\s*'
+            .. '\\%([0-9]\\{4}\\%(-[0-9]\\{4\\}\\)\\?,\\s*\\)*'
+            .. '\\zs'
+            .. '\\%('
+            .. os.date '%Y'
+            .. '\\)\\@!\\([0-9]\\{4\\}\\)'
+            .. '\\%(-'
+            .. os.date '%Y'
+            .. '\\)\\@!\\%(-[0-9]\\{4\\}\\)\\?'
+            .. '\\ze'
+            .. '\\%(\\%([0-9]\\{4\\}\\)\\@!.\\)*'
+            .. post_pat
+            .. '$:'
+            .. '\\1-'
+            .. os.date '%Y'
+            .. ':e',
+        { output = false }
+    )
     vim.fn.histdel('/', -1)
 end
 
 local function collapse_to_range_clause(range, post_pat)
-    vim.api.nvim_exec2(range .. 's:\\m' ..
-        '\\cCOPYRIGHT\\s*\\%((c)\\|©\\|&copy;\\)\\?\\s*' ..
-        '\\zs' ..
-        '\\%(' .. os.date("%Y") .. '\\)\\@!\\([0-9]\\{4}\\)\\%(\\s*[,-]\\?\\s*\\%([0-9]\\{4\\}\\)\\)*' ..
-        '\\ze' ..
-        '\\%(\\%([0-9]\\{4\\}\\)\\@!.\\)*' ..
-        post_pat .. '$:' ..
-        '\\1-' .. os.date("%Y") .. ':e',
-        {output=false})
+    vim.api.nvim_exec2(
+        range
+            .. 's:\\m'
+            .. '\\cCOPYRIGHT\\s*\\%((c)\\|©\\|&copy;\\)\\?\\s*'
+            .. '\\zs'
+            .. '\\%('
+            .. os.date '%Y'
+            .. '\\)\\@!\\([0-9]\\{4}\\)\\%(\\s*[,-]\\?\\s*\\%([0-9]\\{4\\}\\)\\)*'
+            .. '\\ze'
+            .. '\\%(\\%([0-9]\\{4\\}\\)\\@!.\\)*'
+            .. post_pat
+            .. '$:'
+            .. '\\1-'
+            .. os.date '%Y'
+            .. ':e',
+        { output = false }
+    )
     vim.fn.histdel('/', -1)
 end
 
@@ -162,7 +199,7 @@ local function adjust_range(range)
     -- First line in range (or entire range) is a line number
     first, sep, last = string.match(range, '^([0-9]+)([,;])(.*)$')
     if (first and sep) or (first and not sep and not last) then
-        if first+0 > last_buf_line_number then
+        if first + 0 > last_buf_line_number then
             return nil
         end
     end
@@ -170,7 +207,7 @@ local function adjust_range(range)
     -- Second line in range is a line number
     first, sep, last = string.match(range, '^(.+)([,;])([0-9]+)$')
     if first and sep and last then
-        if last+0 > last_buf_line_number then
+        if last + 0 > last_buf_line_number then
             -- Assume the first line is in the buffer
             return first .. sep .. last_buf_line_number
         end
@@ -193,7 +230,7 @@ function M.update(force, post_pat, range)
     end
 
     if not vim.bo.modifiable then
-        vim.api.nvim_echo({{'copyright-updater.nvim buffer is not modifiable'}}, true, {err=true})
+        vim.api.nvim_echo({ { 'copyright-updater.nvim buffer is not modifiable' } }, true, { err = true })
         return
     end
 
@@ -210,7 +247,9 @@ function M.update(force, post_pat, range)
     end
 
     local report = vim.api.nvim_get_option_value('report', {})
-    if options.silent then vim.opt.report = 10000 end -- disable reporting
+    if options.silent then
+        vim.opt.report = 10000
+    end -- disable reporting
 
     -- save cursor position
     local position = vim.fn.winsaveview()
@@ -231,23 +270,31 @@ function M.update(force, post_pat, range)
             update_range_clause(opts.range, opts.post_pat)
         end
     else
-        vim.api.nvim_echo({{'copyright-updater.nvim unknown option value for style.kind'}}, true, {err=true})
+        vim.api.nvim_echo({ { 'copyright-updater.nvim unknown option value for style.kind' } }, true, { err = true })
     end
 
     -- Restore cursor position
-    if options.return_cursor then vim.fn.winrestview(position) end
+    if options.return_cursor then
+        vim.fn.winrestview(position)
+    end
 
-    if options.silent then vim.opt.report = report end -- restore reporting
+    if options.silent then
+        vim.opt.report = report
+    end -- restore reporting
 end
 
 function M.enable()
     options.enabled = true
-    if not options.silent then vim.api.nvim_echo({{'Copyright Updater Enabled'}}, true, {err=true}) end
+    if not options.silent then
+        vim.api.nvim_echo({ { 'Copyright Updater Enabled' } }, true, { err = true })
+    end
 end
 
 function M.disable()
     options.enabled = false
-    if not options.silent then vim.api.nvim_echo({{'Copyright Updater Disabled'}}, true, {err=true}) end
+    if not options.silent then
+        vim.api.nvim_echo({ { 'Copyright Updater Disabled' } }, true, { err = true })
+    end
 end
 
 function M.toggle()
@@ -259,41 +306,42 @@ function M.toggle()
 end
 
 local function verify_options()
-    assert(type(options.enabled) == "boolean", "Option 'enabled' must be either true or false")
-    assert(type(options.silent) == "boolean", "Option 'silent' must be either true or false")
+    assert(type(options.enabled) == 'boolean', "Option 'enabled' must be either true or false")
+    assert(type(options.silent) == 'boolean', "Option 'silent' must be either true or false")
 
     -- style
-    assert(type(options.style) == "table", "Option 'style' must be a table")
-    assert(type(options.style.kind) == "string" and
-        (options.style.kind == "advanced" or options.style.kind == "simple"),
-        "Option 'style.kind' must be either 'advanced' or 'simple'")
-    assert(type(options.style.simple) == "table", "Option 'style.simple' must be a table")
-    assert(type(options.style.simple.force) == "boolean", "Option 'style.simple.force' must be either true or false")
-    assert(type(options.style.advanced) == "table", "Option 'style.advanced' must be a table")
-    assert(type(options.style.advanced.space_after_comma) == "boolean", "Option 'style.advanced.space_after_comma' must be either true or false")
+    assert(type(options.style) == 'table', "Option 'style' must be a table")
+    assert(
+        type(options.style.kind) == 'string' and (options.style.kind == 'advanced' or options.style.kind == 'simple'),
+        "Option 'style.kind' must be either 'advanced' or 'simple'"
+    )
+    assert(type(options.style.simple) == 'table', "Option 'style.simple' must be a table")
+    assert(type(options.style.simple.force) == 'boolean', "Option 'style.simple.force' must be either true or false")
+    assert(type(options.style.advanced) == 'table', "Option 'style.advanced' must be a table")
+    assert(type(options.style.advanced.space_after_comma) == 'boolean', "Option 'style.advanced.space_after_comma' must be either true or false")
 
     -- mappings
-    assert(type(options.mappings) == "table", "Option 'mappings' must be a table")
-    assert(type(options.mappings.toggle) == "string" or type(options.mappings.toggle) == "nil", "Option 'mappings.toggle' must be a string or nil")
-    assert(type(options.mappings.update) == "string" or type(options.mappings.update) == "nil", "Option 'mappings.update' must be a string or nil")
-    assert(type(options.mappings.enable) == "string" or type(options.mappings.enable) == "nil", "Option 'mappings.enable' must be a string or nil")
-    assert(type(options.mappings.disable) == "string" or type(options.mappings.disable) == "nil", "Option 'mappings.disable' must be a string or nil")
+    assert(type(options.mappings) == 'table', "Option 'mappings' must be a table")
+    assert(type(options.mappings.toggle) == 'string' or type(options.mappings.toggle) == 'nil', "Option 'mappings.toggle' must be a string or nil")
+    assert(type(options.mappings.update) == 'string' or type(options.mappings.update) == 'nil', "Option 'mappings.update' must be a string or nil")
+    assert(type(options.mappings.enable) == 'string' or type(options.mappings.enable) == 'nil', "Option 'mappings.enable' must be a string or nil")
+    assert(type(options.mappings.disable) == 'string' or type(options.mappings.disable) == 'nil', "Option 'mappings.disable' must be a string or nil")
 
     -- limiters
-    assert(type(options.limiters) == "table", "Option 'limiters' must be a table")
-    assert(type(options.limiters.range) == "string", "Option 'limiters.range' must be a string")
-    assert(type(options.limiters.post_pattern) == "string", "Option 'limiters.post_pattern' must be a table")
-    assert(type(options.limiters.files) == "table", "Option 'limiters.files' must be a table")
-    assert(type(options.limiters.files.types) == "table", "Option 'limiters.files.types' must be a table")
-    assert(type(options.limiters.files.names) == "table", "Option 'limiters.files.names' must be a table")
-    assert(type(options.limiters.files.type_whitelist) == "boolean", "Option 'limiters.files.type_whitelist' must be either true or false")
-    assert(type(options.limiters.files.name_whitelist) == "boolean", "Option 'limiters.files.name_whitelist' must be either true or false")
+    assert(type(options.limiters) == 'table', "Option 'limiters' must be a table")
+    assert(type(options.limiters.range) == 'string', "Option 'limiters.range' must be a string")
+    assert(type(options.limiters.post_pattern) == 'string', "Option 'limiters.post_pattern' must be a table")
+    assert(type(options.limiters.files) == 'table', "Option 'limiters.files' must be a table")
+    assert(type(options.limiters.files.types) == 'table', "Option 'limiters.files.types' must be a table")
+    assert(type(options.limiters.files.names) == 'table', "Option 'limiters.files.names' must be a table")
+    assert(type(options.limiters.files.type_whitelist) == 'boolean', "Option 'limiters.files.type_whitelist' must be either true or false")
+    assert(type(options.limiters.files.name_whitelist) == 'boolean', "Option 'limiters.files.name_whitelist' must be either true or false")
 
-    for i,_ in pairs(options.limiters.files.types) do
-        assert(type(options.limiters.files.types[i]) == "string", "Entries in option table 'limiters.files.types' must be of type string")
+    for i, _ in pairs(options.limiters.files.types) do
+        assert(type(options.limiters.files.types[i]) == 'string', "Entries in option table 'limiters.files.types' must be of type string")
     end
-    for i,_ in pairs(options.limiters.files.names) do
-        assert(type(options.limiters.files.names[i]) == "string", "Entries in option table 'limiters.files.names' must be of type string")
+    for i, _ in pairs(options.limiters.files.names) do
+        assert(type(options.limiters.files.names[i]) == 'string', "Entries in option table 'limiters.files.names' must be of type string")
     end
 end
 
@@ -301,7 +349,7 @@ local function user_cmd_UpdateCopyright(opts)
     local post_pat = nil
     local range = nil
 
-    if opts.args ~= "" then
+    if opts.args ~= '' then
         post_pat = opts.args
     elseif opts.bang then
         post_pat = ''
@@ -330,31 +378,51 @@ function M.setup(config)
 
     -- Set key mappings
     if options.mappings.toggle ~= '' and options.mappings.toggle ~= nil then
-        vim.api.nvim_set_keymap('n', options.mappings.toggle, '<cmd>lua require("copyright-updater").toggle()<CR>', {noremap=true, silent=true, desc='Toggle Copyright Updater'})
+        vim.api.nvim_set_keymap(
+            'n',
+            options.mappings.toggle,
+            '<cmd>lua require("copyright-updater").toggle()<CR>',
+            { noremap = true, silent = true, desc = 'Toggle Copyright Updater' }
+        )
     end
     if options.mappings.enable ~= '' and options.mappings.enable ~= nil then
-        vim.api.nvim_set_keymap('n', options.mappings.enable, '<cmd>lua require("copyright-updater").enable()<CR>', {noremap=true, silent=true, desc='Enable Copyright Updater'})
+        vim.api.nvim_set_keymap(
+            'n',
+            options.mappings.enable,
+            '<cmd>lua require("copyright-updater").enable()<CR>',
+            { noremap = true, silent = true, desc = 'Enable Copyright Updater' }
+        )
     end
     if options.mappings.disable ~= '' and options.mappings.disable ~= nil then
-        vim.api.nvim_set_keymap('n', options.mappings.disable, '<cmd>lua require("copyright-updater").disable()<CR>', {noremap=true, silent=true, desc='Disable Copyright Updater'})
+        vim.api.nvim_set_keymap(
+            'n',
+            options.mappings.disable,
+            '<cmd>lua require("copyright-updater").disable()<CR>',
+            { noremap = true, silent = true, desc = 'Disable Copyright Updater' }
+        )
     end
     if options.mappings.update ~= '' and options.mappings.update ~= nil then
-        vim.api.nvim_set_keymap('n', options.mappings.update, '<cmd>lua require("copyright-updater").update()<CR>', {noremap=true, silent=true, desc='Update Copyrights'})
+        vim.api.nvim_set_keymap(
+            'n',
+            options.mappings.update,
+            '<cmd>lua require("copyright-updater").update()<CR>',
+            { noremap = true, silent = true, desc = 'Update Copyrights' }
+        )
     end
 
-    vim.api.nvim_create_augroup("copyright_updater", { clear = true })
-    vim.api.nvim_create_autocmd("BufWritePre", {
-        desc = "Update Copyright",
-        group = "copyright_updater",
-        pattern = "*",
-        callback = function() M.update() end
+    vim.api.nvim_create_augroup('copyright_updater', { clear = true })
+    vim.api.nvim_create_autocmd('BufWritePre', {
+        desc = 'Update Copyright',
+        group = 'copyright_updater',
+        pattern = '*',
+        callback = function()
+            M.update()
+        end,
     })
 
-    vim.api.nvim_create_user_command(
-        'UpdateCopyright',
-        function(opts) user_cmd_UpdateCopyright(opts) end,
-        {bang=true,range=true,nargs='?'}
-    )
+    vim.api.nvim_create_user_command('UpdateCopyright', function(opts)
+        user_cmd_UpdateCopyright(opts)
+    end, { bang = true, range = true, nargs = '?' })
 end
 
 return M

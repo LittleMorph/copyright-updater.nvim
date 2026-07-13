@@ -1,172 +1,175 @@
-local copyright_updater = require("copyright-updater")
-describe("copyright_updater", function()
+local copyright_updater = require 'copyright-updater'
+describe('copyright_updater', function()
     for _, setup in ipairs {
         {
             name = 'advanced',
-            style = { kind = 'advanced' }
-        },{
+            style = { kind = 'advanced' },
+        },
+        {
             name = 'advanced',
-            style = { kind = 'advanced', advanced = { force = true } }
-        },{
+            style = { kind = 'advanced', advanced = { force = true } },
+        },
+        {
             name = 'simple',
-            style = { kind = 'simple', simple = { force = false } }
-        },{
+            style = { kind = 'simple', simple = { force = false } },
+        },
+        {
             name = 'forced simple',
-            style = { kind = 'simple', simple = { force = true } }
-        }
+            style = { kind = 'simple', simple = { force = true } },
+        },
     } do
-        describe(":UpdateCopyright (" .. setup.name .. " style)", function()
+        describe(':UpdateCopyright (' .. setup.name .. ' style)', function()
             after_each(function()
                 vim.api.nvim_buf_set_lines(0, 0, -1, false, {})
             end)
 
-            it("should work with a post pattern", function()
-                copyright_updater.setup({
+            it('should work with a post pattern', function()
+                copyright_updater.setup {
                     silent = true,
                     style = setup.style,
-                    limiters = { post_pattern = "Corp A/S" }
-                })
+                    limiters = { post_pattern = 'Corp A/S' },
+                }
                 vim.api.nvim_buf_set_lines(0, 0, -1, false, {
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " Corp A/S",
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " New Org Inc.",
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " Foobar",
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' Corp A/S',
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' New Org Inc.',
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' Foobar',
                 })
-                vim.cmd(":UpdateCopyright")
+                vim.cmd ':UpdateCopyright'
                 assert.same(vim.api.nvim_buf_get_lines(0, 0, -1, false), {
-                    "# Copyright © 2018-" .. os.date("%Y") .. " Corp A/S",
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " New Org Inc.",
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " Foobar",
+                    '# Copyright © 2018-' .. os.date '%Y' .. ' Corp A/S',
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' New Org Inc.',
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' Foobar',
                 })
             end)
 
-            it("should work with another post pattern", function()
-                copyright_updater.setup({
+            it('should work with another post pattern', function()
+                copyright_updater.setup {
                     silent = true,
                     style = setup.style,
-                    limiters = { post_pattern = "New Org Inc." }
-                })
+                    limiters = { post_pattern = 'New Org Inc.' },
+                }
                 vim.api.nvim_buf_set_lines(0, 0, -1, false, {
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " Corp A/S",
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " New Org Inc.",
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " Foobar",
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' Corp A/S',
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' New Org Inc.',
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' Foobar',
                 })
-                vim.cmd(":UpdateCopyright")
+                vim.cmd ':UpdateCopyright'
                 assert.same(vim.api.nvim_buf_get_lines(0, 0, -1, false), {
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " Corp A/S",
-                    "# Copyright © 2018-" .. os.date("%Y") .. " New Org Inc.",
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " Foobar",
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' Corp A/S',
+                    '# Copyright © 2018-' .. os.date '%Y' .. ' New Org Inc.',
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' Foobar',
                 })
             end)
 
-            it("should work with a post pattern regex", function()
-                copyright_updater.setup({
+            it('should work with a post pattern regex', function()
+                copyright_updater.setup {
                     silent = true,
                     style = setup.style,
-                    limiters = { post_pattern = "\\%(Corp A/S\\|New Org Inc.\\)" }
-                })
+                    limiters = { post_pattern = '\\%(Corp A/S\\|New Org Inc.\\)' },
+                }
                 vim.api.nvim_buf_set_lines(0, 0, -1, false, {
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " Corp A/S, All rights reserved",
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " Corp A/S Trailing",
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " Corp A/S",
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " New Org Inc., All rights reserved",
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " New Org Inc. Trailing",
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " New Org Inc.",
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " Foobar, All rights reserved",
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " Foobar Trailing",
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " Foobar",
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' Corp A/S, All rights reserved',
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' Corp A/S Trailing',
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' Corp A/S',
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' New Org Inc., All rights reserved',
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' New Org Inc. Trailing',
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' New Org Inc.',
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' Foobar, All rights reserved',
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' Foobar Trailing',
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' Foobar',
                 })
-                vim.cmd(":UpdateCopyright")
+                vim.cmd ':UpdateCopyright'
                 assert.same(vim.api.nvim_buf_get_lines(0, 0, -1, false), {
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " Corp A/S, All rights reserved",
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " Corp A/S Trailing",
-                    "# Copyright © 2018-" .. os.date("%Y") .. " Corp A/S",
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " New Org Inc., All rights reserved",
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " New Org Inc. Trailing",
-                    "# Copyright © 2018-" .. os.date("%Y") .. " New Org Inc.",
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " Foobar, All rights reserved",
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " Foobar Trailing",
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " Foobar",
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' Corp A/S, All rights reserved',
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' Corp A/S Trailing',
+                    '# Copyright © 2018-' .. os.date '%Y' .. ' Corp A/S',
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' New Org Inc., All rights reserved',
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' New Org Inc. Trailing',
+                    '# Copyright © 2018-' .. os.date '%Y' .. ' New Org Inc.',
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' Foobar, All rights reserved',
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' Foobar Trailing',
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' Foobar',
                 })
             end)
 
-            it("should work with a post pattern regex followed by more characters", function()
-                copyright_updater.setup({
+            it('should work with a post pattern regex followed by more characters', function()
+                copyright_updater.setup {
                     silent = true,
                     style = setup.style,
-                    limiters = { post_pattern = "\\%(Corp A/S\\|New Org Inc.\\).*" }
-                })
+                    limiters = { post_pattern = '\\%(Corp A/S\\|New Org Inc.\\).*' },
+                }
                 vim.api.nvim_buf_set_lines(0, 0, -1, false, {
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " Corp A/S, All rights reserved",
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " Corp A/S Trailing",
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " Corp A/S",
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " New Org Inc., All rights reserved",
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " New Org Inc. Trailing",
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " New Org Inc.",
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " Foobar, All rights reserved",
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " Foobar Trailing",
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " Foobar",
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' Corp A/S, All rights reserved',
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' Corp A/S Trailing',
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' Corp A/S',
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' New Org Inc., All rights reserved',
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' New Org Inc. Trailing',
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' New Org Inc.',
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' Foobar, All rights reserved',
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' Foobar Trailing',
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' Foobar',
                 })
-                vim.cmd(":UpdateCopyright")
+                vim.cmd ':UpdateCopyright'
                 assert.same(vim.api.nvim_buf_get_lines(0, 0, -1, false), {
-                    "# Copyright © 2018-" .. os.date("%Y") .. " Corp A/S, All rights reserved",
-                    "# Copyright © 2018-" .. os.date("%Y") .. " Corp A/S Trailing",
-                    "# Copyright © 2018-" .. os.date("%Y") .. " Corp A/S",
-                    "# Copyright © 2018-" .. os.date("%Y") .. " New Org Inc., All rights reserved",
-                    "# Copyright © 2018-" .. os.date("%Y") .. " New Org Inc. Trailing",
-                    "# Copyright © 2018-" .. os.date("%Y") .. " New Org Inc.",
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " Foobar, All rights reserved",
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " Foobar Trailing",
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " Foobar",
+                    '# Copyright © 2018-' .. os.date '%Y' .. ' Corp A/S, All rights reserved',
+                    '# Copyright © 2018-' .. os.date '%Y' .. ' Corp A/S Trailing',
+                    '# Copyright © 2018-' .. os.date '%Y' .. ' Corp A/S',
+                    '# Copyright © 2018-' .. os.date '%Y' .. ' New Org Inc., All rights reserved',
+                    '# Copyright © 2018-' .. os.date '%Y' .. ' New Org Inc. Trailing',
+                    '# Copyright © 2018-' .. os.date '%Y' .. ' New Org Inc.',
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' Foobar, All rights reserved',
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' Foobar Trailing',
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' Foobar',
                 })
             end)
 
-            it("should work with a post pattern regex containing colons", function()
-                copyright_updater.setup({
+            it('should work with a post pattern regex containing colons', function()
+                copyright_updater.setup {
                     silent = true,
                     style = setup.style,
-                    limiters = { post_pattern = "\\%(Colon:Name:Company\\|New Org Inc.\\).*" }
-                })
+                    limiters = { post_pattern = '\\%(Colon:Name:Company\\|New Org Inc.\\).*' },
+                }
                 vim.api.nvim_buf_set_lines(0, 0, -1, false, {
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " Colon:Name:Company, All rights reserved",
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " Colon:Name:Company Trailing",
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " Colon:Name:Company",
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " New Org Inc., All rights reserved",
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " New Org Inc. Trailing",
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " New Org Inc.",
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " Foobar, All rights reserved",
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " Foobar Trailing",
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " Foobar",
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' Colon:Name:Company, All rights reserved',
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' Colon:Name:Company Trailing',
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' Colon:Name:Company',
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' New Org Inc., All rights reserved',
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' New Org Inc. Trailing',
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' New Org Inc.',
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' Foobar, All rights reserved',
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' Foobar Trailing',
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' Foobar',
                 })
-                vim.cmd(":UpdateCopyright")
+                vim.cmd ':UpdateCopyright'
                 assert.same(vim.api.nvim_buf_get_lines(0, 0, -1, false), {
-                    "# Copyright © 2018-" .. os.date("%Y") .. " Colon:Name:Company, All rights reserved",
-                    "# Copyright © 2018-" .. os.date("%Y") .. " Colon:Name:Company Trailing",
-                    "# Copyright © 2018-" .. os.date("%Y") .. " Colon:Name:Company",
-                    "# Copyright © 2018-" .. os.date("%Y") .. " New Org Inc., All rights reserved",
-                    "# Copyright © 2018-" .. os.date("%Y") .. " New Org Inc. Trailing",
-                    "# Copyright © 2018-" .. os.date("%Y") .. " New Org Inc.",
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " Foobar, All rights reserved",
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " Foobar Trailing",
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " Foobar",
+                    '# Copyright © 2018-' .. os.date '%Y' .. ' Colon:Name:Company, All rights reserved',
+                    '# Copyright © 2018-' .. os.date '%Y' .. ' Colon:Name:Company Trailing',
+                    '# Copyright © 2018-' .. os.date '%Y' .. ' Colon:Name:Company',
+                    '# Copyright © 2018-' .. os.date '%Y' .. ' New Org Inc., All rights reserved',
+                    '# Copyright © 2018-' .. os.date '%Y' .. ' New Org Inc. Trailing',
+                    '# Copyright © 2018-' .. os.date '%Y' .. ' New Org Inc.',
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' Foobar, All rights reserved',
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' Foobar Trailing',
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' Foobar',
                 })
             end)
 
-            it("should work with an empty post pattern", function()
-                copyright_updater.setup({
+            it('should work with an empty post pattern', function()
+                copyright_updater.setup {
                     silent = true,
                     style = setup.style,
-                    limiters = { post_pattern = '' }
-                })
+                    limiters = { post_pattern = '' },
+                }
                 vim.api.nvim_buf_set_lines(0, 0, -1, false, {
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " Foobar, All rights reserved",
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " Foobar Trailing",
-                    "# Copyright © 2018-" .. os.date("%Y") - 1 .. " Foobar",
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' Foobar, All rights reserved',
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' Foobar Trailing',
+                    '# Copyright © 2018-' .. os.date '%Y' - 1 .. ' Foobar',
                 })
-                vim.cmd(":UpdateCopyright")
+                vim.cmd ':UpdateCopyright'
                 assert.same(vim.api.nvim_buf_get_lines(0, 0, -1, false), {
-                    "# Copyright © 2018-" .. os.date("%Y") .. " Foobar, All rights reserved",
-                    "# Copyright © 2018-" .. os.date("%Y") .. " Foobar Trailing",
-                    "# Copyright © 2018-" .. os.date("%Y") .. " Foobar",
+                    '# Copyright © 2018-' .. os.date '%Y' .. ' Foobar, All rights reserved',
+                    '# Copyright © 2018-' .. os.date '%Y' .. ' Foobar Trailing',
+                    '# Copyright © 2018-' .. os.date '%Y' .. ' Foobar',
                 })
             end)
         end)
